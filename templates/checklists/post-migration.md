@@ -42,11 +42,14 @@ Copy this file into your project and run through it after completing the migrati
 - [ ] `workflows/subagent-driven.md` exists with project-specific Forbidden Zones + Acceptance commands (if applicable)
 - [ ] External vendor/tool/runtime claims carry `external-fact` markers and `bash skills/<name>/scripts/check-external-facts.sh .` passes
 
-## Hook Checks (if harness supports SessionStart)
+## Hook Checks (if harness supports them)
 
 - [ ] `.claude/hooks/session-start` exists and is executable
 - [ ] Smoke test passes: `CLAUDE_HARNESS=claude bash .claude/hooks/session-start` exits 0 and outputs valid JSON
 - [ ] `.claude/settings.json` registers the hook for `startup|clear|compact`
+- [ ] If long-workflow state injection is enabled, `.claude/hooks/workflow-state` exists and is executable
+- [ ] Workflow-state quiet-pass test succeeds: `bash .claude/hooks/workflow-state` exits 0 with no `.skill-workflow-state`
+- [ ] `.claude/settings.json` registers workflow-state for `UserPromptSubmit`
 
 ## Activation Smoke Test
 

@@ -12,7 +12,7 @@ templates/
 │   ├── SKILL.md.template     (renamed to SKILL.md during Quick Start)
 │   ├── routing.yaml            (single source for Always Read + Common Tasks + shell bootstraps)
 │   ├── rules/{project-rules,coding-standards,agent-behavior}.md
-│   ├── workflows/{profile-project,update-upstream,update-rules,fix-bug,change-managed,edit-templates,maintain-docs,subagent-driven}.md
+│   ├── workflows/{profile-project,plan-feature,update-upstream,update-rules,fix-bug,change-managed,edit-templates,maintain-docs,subagent-driven}.md
 │   ├── workflows/invoke-skill.md.example  (copy-paste template for Pattern A composition; rename and adapt)
 │   ├── references/{gotchas,behavior-failures}.md
 │   └── scripts/              → automated verification (lives inside the skill)
@@ -30,8 +30,9 @@ templates/
 │   └── .cursor/skills/{{NAME}}/SKILL.md.template
 ├── hooks/                    → optional SessionStart injection + mechanism-level gates
 │   ├── session-start              (bash, per-harness JSON branching — re-inject one router)
+│   ├── workflow-state             (bash, UserPromptSubmit — inject one active workflow hint)
 │   ├── agent-behavior-gate.sh     (bash, PreToolUse — enforce Admission Threshold deterministically)
-│   ├── hooks.json                 (Claude Code config — SessionStart + PreToolUse)
+│   ├── hooks.json                 (Claude Code settings fragment — SessionStart + UserPromptSubmit + PreToolUse)
 │   ├── hooks-cursor.json          (Cursor config — same as above, per-harness wiring)
 │   ├── README.md                  (rollout / tuning / false-positive mitigations, per-hook)
 │   └── SECURITY.md                (trust boundary: what may vs must not be written to hook-read files)
@@ -70,9 +71,9 @@ Two kinds — each with a different "fill" mechanism:
 | `skill/routing.yaml` | ≤ 120 lines | Single source of truth for generated Always Read, Common Tasks, trigger examples, required reads, workflows, and thin-shell bootstraps; project-specific after fill |
 | `skill/rules/project-rules.md`, `skill/rules/coding-standards.md` | ≤ 20 lines, ≥ 60% must be `<!-- FILL: -->` | Rule stubs are scaffolding, not content |
 | `skill/rules/agent-behavior.md` | ≤ 100 lines, fully pre-filled | Universal coding defaults. Exception to the stub-only rule — ships as content. **Growth gated** by `ANTI-TEMPLATES.md § Admission Threshold` (convention-level, ~30% hostile-prompt block rate). For mechanism-level enforcement install `templates/hooks/agent-behavior-gate.sh` — blocks 100% of tested attack classes deterministically |
-| `hooks/agent-behavior-gate.sh` | ≤ 150 lines | PreToolUse gate script. False-positive mitigations (shrinking/typo-tolerance paths) live in-script; see `hooks/README.md` |
+| `hooks/session-start`, `hooks/workflow-state`, `hooks/agent-behavior-gate.sh` | ≤ 150 lines each | Optional hook scripts. Keep per-harness branching in-script; see `hooks/README.md` |
 | `hooks/README.md` | ≤ 150 lines | Per-hook rollout guidance; allowed larger because it documents optional installs + tuning |
-| `skill/workflows/profile-project.md`, `update-upstream.md`, `fix-bug.md`, `change-managed.md`, `edit-templates.md` | ≤ 100 lines | Task-specific workflows stay lean |
+| `skill/workflows/profile-project.md`, `plan-feature.md`, `update-upstream.md`, `fix-bug.md`, `change-managed.md`, `edit-templates.md` | ≤ 100 lines | Task-specific workflows stay lean |
 | `skill/workflows/update-rules.md`, `maintain-docs.md`, `subagent-driven.md` | ≤ 250 lines | Protocol-heavy workflows allowed more room |
 | `protocol-blocks/*` | ≤ 40 lines each | One idea per block |
 | `skill/SKILL.md.template` | ≤ 100 lines | Same hard cap as downstream SKILL.md; keep shorter when possible, but do not create a stricter template-only budget that conflicts with smoke-test |

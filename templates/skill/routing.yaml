@@ -1,23 +1,8 @@
 # Canonical Routing Manifest
 #
-# This file is the source of truth for task routing and always-read files.
-# Edit this file first, then run:
-#
-#   bash scripts/sync-routing.sh
-#
-# From the repo root, run:
-#
-#   bash skills/<name>/scripts/sync-routing.sh <name>
-#
-# Generated outputs:
-# - SKILL.md Always Read list
-# - SKILL.md Common Tasks summary
-# - thin-shell Always Read lists
-# - thin-shell bootstrap blocks in AGENTS.md / CLAUDE.md / CODEX.md / GEMINI.md
-# - .codex/instructions.md
-# - .cursor/rules/*.mdc
-# - .cursor/skills/<name>/SKILL.md
-#
+# Source of truth for Always Read, Common Tasks, and shell bootstraps.
+# Edit this file first, then run `bash scripts/sync-routing.sh`.
+# Downstream from repo root: `bash skills/<name>/scripts/sync-routing.sh <name>`.
 # Do not hand-edit generated Always Read lists, route summaries, or bootstrap blocks.
 
 # FILL: Keep this to 2-3 files that apply to every task. Domain-specific rules
@@ -56,6 +41,20 @@ tasks:
       - 优化这个模块
       - 帮我加一个功能
       - refactor this flow
+
+  - id: plan-feature
+    labels:
+      en: Plan a complex feature or long-running change
+      zh: 规划复杂功能 / 长任务
+    route: follow `workflows/plan-feature.md`; create a task dossier only for complex, long-running, or external-research work
+    required_reads:
+      - rules/project-rules.md
+      - rules/coding-standards.md
+    workflow: workflows/plan-feature.md
+    trigger_examples:
+      - 先帮我把这个需求问清楚
+      - 这个功能比较大,先规划一下
+      - plan this feature before coding
 
   - id: profile-project
     labels:

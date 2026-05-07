@@ -1,6 +1,10 @@
 # Hook Injection — Trust Boundary
 
-The SessionStart hook (`templates/hooks/session-start`) reads exactly one configured router file and injects its contents into the agent's context at startup / `/clear` / `/compact`. In a single-skill repo this is usually `skills/<name>/SKILL.md`; in a multi-skill repo it should be `skills/router/SKILL.md` or the file named by `SKILL_ROUTER_PATH`. Any other file wired into a hook (PreToolUse, UserPromptSubmit, Stop, etc.) follows the same model: **the file content becomes prompt on every trigger, verbatim, unreviewed**.
+The SessionStart hook (`templates/hooks/session-start`) reads exactly one configured router file and injects its contents into the agent's context at startup / `/clear` / `/compact`. In a single-skill repo this is usually `skills/<name>/SKILL.md`; in a multi-skill repo it should be `skills/router/SKILL.md` or the file named by `SKILL_ROUTER_PATH`.
+
+The workflow-state hook (`templates/hooks/workflow-state`) reads `.skill-workflow-state`, then injects the matching `[workflow-state:<status>]` block from the named workflow file. This is intentionally narrow: one state file, one allowlisted workflow path, one block. Absolute paths, `..`, and symlink components are ignored.
+
+Any other file wired into a hook (PreToolUse, UserPromptSubmit, Stop, etc.) follows the same model: **the file content becomes prompt on every trigger, verbatim, unreviewed**.
 
 Three consequences:
 

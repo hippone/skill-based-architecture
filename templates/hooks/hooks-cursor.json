@@ -1,5 +1,5 @@
 {
-  "_comment": "Cursor hooks. Copy to .cursor/hooks.json. CLAUDE_HARNESS=cursor switches the session-start JSON shape. Schema matches Claude Code CLI v2.1+ (nested hooks array with type:command). Cursor's PreToolUse contract may differ — verify hook fires before relying on it.",
+  "_comment": "Cursor hooks. Copy to .cursor/hooks.json. CLAUDE_HARNESS=cursor switches context-injection JSON shapes. Schema matches Claude Code CLI v2.1+ (nested hooks array with type:command). Cursor's PreToolUse contract may differ — verify hook fires before relying on it.",
   "hooks": {
     "SessionStart": [
       {
@@ -8,6 +8,17 @@
           {
             "type": "command",
             "command": "CLAUDE_HARNESS=cursor bash .cursor/hooks/session-start"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "_comment": "Optional workflow-state hint for long workflows. The script exits silently unless .skill-workflow-state exists.",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_HARNESS=cursor bash .cursor/hooks/workflow-state"
           }
         ]
       }

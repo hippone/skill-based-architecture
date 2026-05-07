@@ -265,9 +265,9 @@ Pre-built shells for the scaffolded harnesses ship under [`templates/shells/`](.
 
 Context compression (`/clear`, `/compact`) drops previously-loaded skill content from the active window. A `SessionStart` hook re-injects one router file on each fresh session or compaction boundary, turning context loss into a self-healing event rather than a silent failure mode.
 
-The upstream ships a ready-to-copy hook at [`templates/hooks/session-start`](../templates/hooks/session-start) plus two config shims:
+The upstream ships a ready-to-copy SessionStart hook at [`templates/hooks/session-start`](../templates/hooks/session-start) plus two config shims:
 
-- [`templates/hooks/hooks.json`](../templates/hooks/hooks.json) — Claude Code config (`startup|clear|compact` matcher)
+- [`templates/hooks/hooks.json`](../templates/hooks/hooks.json) — Claude Code settings fragment; copy or merge into `.claude/settings.json`
 - [`templates/hooks/hooks-cursor.json`](../templates/hooks/hooks-cursor.json) — Cursor config (same script, different env var)
 
 The script branches on `$CLAUDE_HARNESS` / `$SESSION_HARNESS` and emits the JSON shape each harness expects:
@@ -281,6 +281,8 @@ The script branches on `$CLAUDE_HARNESS` / `$SESSION_HARNESS` and emits the JSON
 **Recommended** for any harness that supports SessionStart hooks (Claude Code, Cursor). Context compression after `/clear` or `/compact` silently drops routing context — the hook is the only defense against this. Skip only if your harness does not support SessionStart hooks or your sessions are consistently short enough that compression never triggers.
 
 **Token policy:** inject navigation, not the knowledge base. Single-skill repos can inject the only `skills/*/SKILL.md`; multi-skill repos should inject `skills/router/SKILL.md` or set `SKILL_ROUTER_PATH`. Do not inject all skill files.
+
+Long workflows can also install [`templates/hooks/workflow-state`](../templates/hooks/workflow-state). It reads `.skill-workflow-state` and injects only the matching `[workflow-state:*]` block from the active workflow, so `/compact` recovery keeps the current phase without replaying the full dossier.
 
 ## Context Hygiene Playbook
 

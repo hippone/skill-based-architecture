@@ -7,7 +7,7 @@
 # exactly one router file and emits it back into the agent's context window in
 # the JSON shape each harness expects. It never injects every skill.
 #
-# Install (Claude Code):  copy script to .claude/hooks/ and config to .claude/hooks.json
+# Install (Claude Code):  copy script to .claude/hooks/ and config to .claude/settings.json
 # Install (Cursor):       copy script to .cursor/hooks/ and config to .cursor/hooks.json
 # Install (other):        call this script from your harness's session-start hook
 

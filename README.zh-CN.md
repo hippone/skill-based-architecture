@@ -1,8 +1,15 @@
+<p align="center">
+  <img src="assets/skill-based-architecture-title.png" alt="skill-ba" width="720">
+</p>
+
 # Skill-Based Architecture
 
 <p align="left">
   <a href="https://github.com/WoJiSama/skill-based-architecture/stargazers">
     <img alt="GitHub stars" src="https://img.shields.io/github/stars/WoJiSama/skill-based-architecture?style=flat&logo=github">
+  </a>
+  <a href="https://github.com/WoJiSama/skill-based-architecture/forks">
+    <img alt="GitHub forks" src="https://img.shields.io/github/forks/WoJiSama/skill-based-architecture?style=flat&logo=github">
   </a>
   <a href="LICENSE">
     <img alt="License" src="https://img.shields.io/github/license/WoJiSama/skill-based-architecture?style=flat">
@@ -11,6 +18,9 @@
   <img alt="Commit activity" src="https://img.shields.io/github/commit-activity/m/WoJiSama/skill-based-architecture?style=flat">
   <a href="https://github.com/WoJiSama/skill-based-architecture/commits">
     <img alt="Last commit" src="https://img.shields.io/github/last-commit/WoJiSama/skill-based-architecture?style=flat&logo=github">
+  </a>
+  <a href="https://linux.do/">
+    <img alt="LinuxDO" src="https://img.shields.io/badge/LINUX-DO-f59e0b?style=flat">
   </a>
   <img alt="Skill-Based Architecture" src="https://img.shields.io/badge/Skill--Based-Architecture-blue">
 </p>

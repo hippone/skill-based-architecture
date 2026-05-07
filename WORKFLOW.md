@@ -50,12 +50,14 @@ find "skills/$NAME" AGENTS.md CLAUDE.md CODEX.md GEMINI.md .codex .cursor \
     -e "s/{{SUMMARY}}/$SUMMARY/g" \
     {} +
 
-# 5) (Optional) install hooks — SessionStart re-injects one router on /clear and /compact
+# 5) (Optional) install hooks — router restore, workflow-state hints, behavior gate
 # mkdir -p .claude/hooks
 # cp "$UPSTREAM/templates/hooks/session-start" .claude/hooks/session-start
+# cp "$UPSTREAM/templates/hooks/workflow-state" .claude/hooks/workflow-state
 # cp "$UPSTREAM/templates/hooks/agent-behavior-gate.sh" .claude/hooks/agent-behavior-gate.sh
-# chmod +x .claude/hooks/session-start .claude/hooks/agent-behavior-gate.sh
-# cp "$UPSTREAM/templates/hooks/hooks.json" .claude/hooks.json
+# chmod +x .claude/hooks/session-start .claude/hooks/workflow-state .claude/hooks/agent-behavior-gate.sh
+# test -f .claude/settings.json || cp "$UPSTREAM/templates/hooks/hooks.json" .claude/settings.json
+# # If settings exists, merge the top-level "hooks" object instead.
 
 # 6) Checkpoint: scaffold done — equivalent to completing Phases 3–7 in one pass
 echo "phase=7" > .migration-state
@@ -158,7 +160,7 @@ Plan the file set based on project size:
 
 - **Minimal single-file starter** — one small `SKILL.md`, no extra directories yet; best when the skill is still short and self-contained
 - **Minimum viable set** (small projects): `rules/project-rules.md`, `workflows/update-rules.md` — start here and add files only when content justifies a separate file
-- **Typical set** (most projects): add `rules/coding-standards.md`, `workflows/profile-project.md`, `workflows/update-upstream.md`, `workflows/fix-bug.md`, `workflows/change-managed.md`, `workflows/edit-templates.md`, `workflows/maintain-docs.md`, `references/architecture.md`
+- **Typical set** (most projects): add `rules/coding-standards.md`, `workflows/profile-project.md`, `workflows/plan-feature.md`, `workflows/update-upstream.md`, `workflows/fix-bug.md`, `workflows/change-managed.md`, `workflows/edit-templates.md`, `workflows/maintain-docs.md`, `references/architecture.md`
 - **Add domain files** as needed: `frontend-rules.md`, `backend-rules.md`, `add-page.md`, `add-controller.md`, etc.
 - **Fullstack / multi-domain**: combine; consider separate skills if domains diverge significantly
 
@@ -392,7 +394,7 @@ Take its answer literally and fold it into the workflow text. The subagent's own
 - Any captured rationalizations added to the Rationalizations table verbatim
 - Final re-run: under maximum pressure, the subagent runs the Task Closure Protocol and cites the relevant rule/workflow
 
-**Recommended:** install `templates/hooks/session-start` so the router and Task Closure Protocol are re-injected on `/clear` and `/compact`. Context compression is itself a pressure source — without the hook, a single `/compact` can silently disable all routing and protocol enforcement. Multi-skill projects should create `skills/router/SKILL.md` or set `SKILL_ROUTER_PATH`; do not inject every skill.
+**Recommended:** install `templates/hooks/session-start` so the router and Task Closure Protocol are re-injected on `/clear` and `/compact`. For long workflows, also install `templates/hooks/workflow-state`; it reads `.skill-workflow-state` and injects only the matching `[workflow-state:*]` block. Context compression is itself a pressure source — without hooks, a single `/compact` can silently disable routing, planning, and protocol enforcement. Multi-skill projects should create `skills/router/SKILL.md` or set `SKILL_ROUTER_PATH`; do not inject every skill.
 
 **Checkpoint — end of Phase 9:** `echo "phase=9" > .migration-state` (migration complete)
 
