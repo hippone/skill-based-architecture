@@ -39,6 +39,7 @@ files:
   - scripts/check-all.sh  # One-command upstream maintenance check suite
   - scripts/check-self-scenarios.sh  # Minimal self-hosting route scenario checks
   - scripts/check-upstream-changes.sh  # Guard requiring upstream notes for downstream-facing updates
+  - scripts/skill-asset  # AAR-time reconcile CLI: where / related / group (zero-deps Node.js)
   - TEMPLATES-GUIDE.md   # Minimal starter + full templates for update-rules, fix-bug, maintain-docs
   - EXAMPLES.md    # Stub + index, redirects to examples/
   - examples/      # Numbered examples and behavior-failure scenarios split by topic

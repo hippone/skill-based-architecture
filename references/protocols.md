@@ -15,6 +15,8 @@ recording, path-integrity, route-path, cross-reference, behavior-validation, or
 external-fact checks. Keep the exact gate wording in `update-rules.md` so the
 protocol does not drift across guide/reference copies.
 
+> **Reconcile tip (gate 3)**: before writing a recorded lesson, run `bash scripts/skill-asset where <keywords>` to surface existing sections that may already cover the topic. Avoids duplicate sections accumulating across files. See [`scripts/README.md`](../scripts/README.md) for `where` / `related` / `group` usage.
+
 ### AAR Scan Questions
 
 1. Did this task reveal a recurring pitfall?

@@ -22,7 +22,7 @@ Threshold: if this change would cause someone to guess wrong on a similar task w
 A task is NOT complete until all seven gates are done:
 1. **Main work + original-constraint check** — before final validation, restate the original request, chosen route, and forbidden shortcuts; if the task was long/interrupted and you cannot, run `protocol-blocks/reboot-check.md`, then verify/tests pass
 2. **30-second AAR scan** — run the checklist below; all "no" = stop here
-3. **Record if needed** — any "yes" → apply recording threshold → record if it passes
+3. **Record if needed** — any "yes" → apply recording threshold → **reconcile before writing** (run `bash scripts/skill-asset where <keywords>` to surface candidate destination sections; merge into the closest existing section, or create a new one only when no fit) → record at the chosen destination
 4. **Path integrity gate** — if this task touched any `.md` file in skill structure, run these from the project repo root before commit; fix failures in the same commit:
    - `bash "skills/<skill-name>/scripts/sync-routing.sh" "<skill-name>" --check` — generated Always Read, Common Tasks, and bootstraps match `routing.yaml`
    - `bash "skills/<skill-name>/scripts/smoke-test.sh" "<skill-name>" --phase 8` — markdown links, structure, routing, and budgets still pass
