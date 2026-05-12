@@ -13,7 +13,7 @@
 #
 #   1. Structural Checks          — SKILL.md, rules/, workflows/, gotchas,
 #                                   Cursor registration entry, thin shells exist
-#   2. Line Count Budgets         — SKILL.md ≤ 100 lines, shells ≤ 60 lines,
+#   2. Line Count Budgets         — SKILL.md dual budget (description ≤ 25 + body ≤ 90), shells ≤ 60 lines,
 #                                   gotchas/pitfall ≤ $GOTCHAS_MAX_LINES (default 400),
 #                                   Common Tasks ≤ $COMMON_TASKS_MAX_ROWS rows
 #                                   (default 10) — both env-overridable
@@ -276,7 +276,44 @@ check_lines() {
   fi
 }
 
-check_lines "$SKILL_MD" 100 "SKILL.md"
+# SKILL.md uses dual budgets — description is the activation gate (frontmatter)
+# and benefits from rich quoted trigger phrases; body is the navigation hub
+# (Always Read / Common Tasks / boundaries) and must stay tight. Splitting the
+# budgets prevents description quality from cannibalizing body clarity (and
+# vice versa). Hard caps: description ≤ 25 lines, body ≤ 90 lines.
+check_skill_md_budget() {
+  local file="$1"
+  [[ -f "$file" ]] || return
+  local desc_lines body_lines
+  desc_lines=$(awk '
+    /^---$/ { f++; next }
+    f==1 && /^description:/ { in_desc=1; count++; next }
+    f==1 && in_desc && /^[a-zA-Z_][a-zA-Z0-9_-]*:/ { in_desc=0 }
+    f==1 && in_desc { count++ }
+    END { print count+0 }
+  ' "$file")
+  body_lines=$(awk '
+    /^---$/ { f++; next }
+    f >= 2 { count++ }
+    END { print count+0 }
+  ' "$file")
+  # If there is no frontmatter (single --- block or none), count whole file as body
+  if [[ "$body_lines" -eq 0 ]]; then
+    body_lines=$(wc -l < "$file" | tr -d ' ')
+  fi
+  if [[ "$desc_lines" -le 25 ]]; then
+    pass "SKILL.md description: $desc_lines lines (≤ 25)"
+  else
+    fail "SKILL.md description: $desc_lines lines (exceeds 25 limit) — split intent clusters or shorten activate-when clause"
+  fi
+  if [[ "$body_lines" -le 90 ]]; then
+    pass "SKILL.md body: $body_lines lines (≤ 90)"
+  else
+    fail "SKILL.md body: $body_lines lines (exceeds 90 limit) — move detail to rules/ workflows/ references/"
+  fi
+}
+
+check_skill_md_budget "$SKILL_MD"
 check_lines "$ROUTING_YAML" 120 "routing.yaml"
 for shell in AGENTS.md CLAUDE.md CODEX.md GEMINI.md; do
   check_lines "$shell" 60 "$shell (thin shell)"

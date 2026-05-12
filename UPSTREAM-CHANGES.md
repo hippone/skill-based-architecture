@@ -36,6 +36,53 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-09 - SKILL.md dual budget + test-trigger per-source rates
+
+- Upstream commit: pending in this working tree
+- Changed areas: `templates/skill/scripts/smoke-test.sh`,
+  `templates/skill/scripts/check-growth-health.sh`,
+  `templates/skill/scripts/test-trigger.sh`,
+  `templates/skill/workflows/maintain-docs.md`,
+  `templates/skill/conformance.yaml`,
+  `templates/README.md`, `references/progressive-rigor.md`,
+  `references/conventions.md`, `SKILL.md`, `AGENTS.md`, `CLAUDE.md`,
+  `CODEX.md`, `GEMINI.md`, `README.md`, `README.zh-CN.md`, `EXAMPLES.md`,
+  `UPSTREAM-CHANGES.md`
+- Why it matters: closes two diagnostic gaps surfaced when auditing real
+  downstream skills.
+  1. **SKILL.md dual budget.** A single 100-line cap forced description
+     quality to cannibalize body clarity (or vice versa) — when a skill
+     wrote a proper 15-line description with quoted trigger phrases, body
+     budget shrank to 85 lines and forced cramped routing tables. The
+     budget now splits into description ≤ 25 lines (activation gate) +
+     body ≤ 90 lines (navigation hub), enforced separately by
+     `smoke-test.sh` and reported separately by `check-growth-health.sh`.
+     Total cap effectively rises from 100 to 115, but each half has its
+     own discipline — description can't bloat past 25 by stuffing
+     workflow keywords, body can't bloat past 90 by inlining rule content.
+  2. **test-trigger.sh per-source rates.** The script now reports
+     trigger rate broken down by source (description quoted phrases vs.
+     routing.yaml trigger_examples vs. Common Tasks vs. body candidates),
+     not just one combined number. A large description-vs-routing gap
+     (≥ 30 points) flags that the description is missing whole task
+     categories the routing.yaml introduces — the most common cause of
+     low real-world activation rates. Real-data example: chaos showed
+     overall 69% but split into description 100% / routing 50% — the
+     gap pointed straight at six trigger categories (plan / model / docs
+     / upstream / rule-maintenance / fallback) that lived in routing.yaml
+     but never made it into the description.
+- Downstream refresh guidance: pull the updated `scripts/smoke-test.sh`,
+  `scripts/check-growth-health.sh`, `scripts/test-trigger.sh`, and
+  `workflows/maintain-docs.md` as mechanism-owned files. After the
+  refresh:
+  - Re-run `smoke-test.sh <name>` — your SKILL.md may previously have been
+    a single-budget pass; if description was already ≤ 25 lines, the
+    dual budget will still pass.
+  - Re-run `test-trigger.sh <name>` — the per-source rates surface
+    coverage gaps that the single number used to hide. A description ≤
+    20% trigger rate against routing.yaml entries is the smoking-gun
+    signal for the chaos-shaped gap.
+
 ## 2026-05-09 - test-trigger.sh body-candidate scan
 
 - Upstream commit: pending in this working tree

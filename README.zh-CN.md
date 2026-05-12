@@ -34,7 +34,7 @@ AGENTS.md / CLAUDE.md / .cursor/rules / README 注记
         │
         ▼
 skills/<project>/
-├── SKILL.md          # 路由器: Always Read + Common Tasks (≤ 100 行)
+├── SKILL.md          # 路由器: description ≤ 25 + body ≤ 90 行(双预算)
 ├── rules/            # 稳定约束
 ├── workflows/        # 可复用流程
 ├── references/       # 架构、坑点、索引

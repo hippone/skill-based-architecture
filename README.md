@@ -34,7 +34,7 @@ AGENTS.md / CLAUDE.md / .cursor/rules / README notes
         │
         ▼
 skills/<project>/
-├── SKILL.md          # router: Always Read + Common Tasks (≤ 100 lines)
+├── SKILL.md          # router: description ≤ 25 + body ≤ 90 lines (dual budget)
 ├── rules/            # stable constraints
 ├── workflows/        # repeatable procedures
 ├── references/       # architecture, gotchas, indexes

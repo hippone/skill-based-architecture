@@ -69,7 +69,7 @@ Two kinds — each with a different "fill" mechanism:
 | `skill/workflows/profile-project.md`, `plan-feature.md`, `update-upstream.md`, `fix-bug.md`, `change-managed.md`, `edit-templates.md` | ≤ 100 lines | Task-specific workflows stay lean |
 | `skill/workflows/update-rules.md`, `maintain-docs.md`, `subagent-driven.md` | ≤ 250 lines | Protocol-heavy workflows allowed more room |
 | `protocol-blocks/*` | ≤ 40 lines each | One idea per block |
-| `skill/SKILL.md.template` | ≤ 100 lines | Same hard cap as downstream SKILL.md; keep shorter when possible, but do not create a stricter template-only budget that conflicts with smoke-test |
+| `skill/SKILL.md.template` | dual budget: description ≤ 25 lines + body ≤ 90 lines | Same hard cap as downstream SKILL.md (smoke-test enforces both separately). description carries quoted trigger phrases; body navigates rules/workflows/references. Keep each shorter when possible. |
 | `skill/scripts/smoke-test.sh` | ≤ 800 lines | Structural test harness; keep scenario behavior out of this script |
 | `skill/scripts/test-trigger.sh` | ≤ 360 lines | Trigger-rate helper; split if it starts owning routing policy |
 | `skill/scripts/sync-routing.sh` | ≤ 320 lines | Generator/checker for routing.yaml-derived blocks; keep dependency-free |
@@ -89,7 +89,8 @@ not force an automatic refactor; it forces an explicit decision.
 
 | Signal | Review when | Default action |
 |---|---:|---|
-| `SKILL.md` line count | > 100 | Move detail to routed files or downgrade scope |
+| `SKILL.md` description lines | > 25 | Split intent clusters or shorten activate-when clause |
+| `SKILL.md` body lines | > 90 | Move detail to routed files or downgrade scope |
 | Always Read files | > 3 | Demote domain-specific files to task routes |
 | Concrete routes | > 10 | Group routes, merge low-frequency tasks, or evaluate multi-skill split |
 | `references/` orphans | > 0 | Add an activation path or delete the reference |

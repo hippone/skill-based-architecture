@@ -92,7 +92,7 @@ Both are valuable. The key difference: rules are constraints agents must follow;
 | Anti-pattern | Why it hurts | Fix |
 |---|---|---|
 | **Fat thin shell** — "compatibility shell" grows rule bodies or project-specific process detail | Defeats single-source-of-truth; two places to update | Strip back to routing, auto-triggers, compatibility notes, and conflict rule only |
-| **SKILL.md as second README** — repeats project setup, tech stack, onboarding | Agent reads redundant context; SKILL.md exceeds 100 lines | Keep setup in README; SKILL.md only navigates rules/workflows |
+| **SKILL.md as second README** — repeats project setup, tech stack, onboarding | Agent reads redundant context; SKILL.md body exceeds 90 lines | Keep setup in README; SKILL.md only navigates rules/workflows |
 | **Rules ↔ Workflows mixed** — `backend-rules.md` contains step-by-step procedures | Hard to find the checklist when needed; hard to update constraints independently | Constraints → `rules/`, procedures → `workflows/` |
 | **Implicit cross-skill dependency** — Skill A silently requires reading Skill B first | Agent misses context if it only reads one skill | Each skill self-contained; shared content → `skills/shared/` |
 | **Mega sub-file** — one `backend-rules.md` at 500+ lines | Same problem as the original oversized SKILL.md, one level down | Split by subdomain: `controller-rules.md`, `mapper-rules.md`, etc. |

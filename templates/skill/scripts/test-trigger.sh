@@ -430,13 +430,38 @@ done
 echo ""
 
 # ── Run each prompt through claude -p ─────────────────────────────────
+# Track results per source so we can show separate rates:
+#   - desc:   trigger phrases pulled from frontmatter description
+#   - route:  trigger_examples from routing.yaml
+#   - ct:     Common Tasks lines (compound routing prose)
+#   - body:   body candidates surfaced by --include-body
 TRIGGERED=0
 TOTAL=${#PROMPTS[@]}
 RESULTS=()
+DESC_T=0; DESC_TOT=0
+ROUTE_T=0; ROUTE_TOT=0
+CT_T=0; CT_TOT=0
+BODY_T=0; BODY_TOT=0
+
+classify_source() {
+  case "$1" in
+    "[trigger phrase]"*) echo "desc" ;;
+    "[routing.yaml]"*)   echo "route" ;;
+    "[body candidate"*)  echo "body" ;;
+    *)                   echo "ct" ;;
+  esac
+}
 
 for i in "${!PROMPTS[@]}"; do
   prompt="${PROMPTS[$i]}"
   task="${TASK_NAMES[$i]}"
+  src=$(classify_source "$task")
+  case "$src" in
+    desc)  DESC_TOT=$((DESC_TOT+1)) ;;
+    route) ROUTE_TOT=$((ROUTE_TOT+1)) ;;
+    ct)    CT_TOT=$((CT_TOT+1)) ;;
+    body)  BODY_TOT=$((BODY_TOT+1)) ;;
+  esac
   echo "Testing [$((i+1))/$TOTAL]: $task"
 
   # Use claude -p with a meta-prompt that asks which skill would activate
@@ -457,6 +482,12 @@ Important: only answer with skill names and paths, nothing else. Be brief."
     echo "  ✅ Triggered (found reference to $NAME)"
     ((TRIGGERED+=1))
     RESULTS+=("✅")
+    case "$src" in
+      desc)  DESC_T=$((DESC_T+1)) ;;
+      route) ROUTE_T=$((ROUTE_T+1)) ;;
+      ct)    CT_T=$((CT_T+1)) ;;
+      body)  BODY_T=$((BODY_T+1)) ;;
+    esac
   elif echo "$RESPONSE" | grep -qi "NO_SKILL_MATCH\|ERROR_RUNNING" 2>/dev/null; then
     echo "  ❌ NOT triggered"
     RESULTS+=("❌")
@@ -471,15 +502,45 @@ done
 echo ""
 echo "═══════════════════════════════════════"
 RATE=$((TRIGGERED * 100 / TOTAL))
-echo "  Trigger Rate: $TRIGGERED/$TOTAL ($RATE%)"
+echo "  Overall Trigger Rate: $TRIGGERED/$TOTAL ($RATE%)"
+echo ""
+echo "  By source:"
+fmt_rate() {
+  local t="$1" tot="$2"
+  if [[ "$tot" -eq 0 ]]; then echo "n/a"; else echo "$t/$tot ($((t*100/tot))%)"; fi
+}
+printf "    %-32s %s\n" "description quoted phrases:" "$(fmt_rate $DESC_T $DESC_TOT)"
+printf "    %-32s %s\n" "routing.yaml trigger_examples:" "$(fmt_rate $ROUTE_T $ROUTE_TOT)"
+printf "    %-32s %s\n" "Common Tasks routing lines:" "$(fmt_rate $CT_T $CT_TOT)"
+if [[ "$BODY_TOT" -gt 0 ]]; then
+  printf "    %-32s %s\n" "body candidates (--include-body):" "$(fmt_rate $BODY_T $BODY_TOT)"
+fi
 echo ""
 
+# Diagnostic note: the split surfaces the typical asymmetry —
+# description phrases usually trigger because they appear in the activation
+# gate Agent reads; routing.yaml phrases only trigger if the description
+# semantically covers their domain. A large gap (route_rate << desc_rate)
+# means the routing.yaml introduces task categories the description never
+# named, so those categories silently fail to activate.
+if [[ "$ROUTE_TOT" -gt 0 && "$DESC_TOT" -gt 0 ]]; then
+  ROUTE_RATE=$((ROUTE_T * 100 / ROUTE_TOT))
+  DESC_RATE=$((DESC_T * 100 / DESC_TOT))
+  GAP=$((DESC_RATE - ROUTE_RATE))
+  if [[ "$GAP" -ge 30 ]]; then
+    echo "  ⚠️  Description-vs-routing gap: $GAP points."
+    echo "      routing.yaml introduces task categories the description does"
+    echo "      not name. Promote those categories' trigger phrases into the"
+    echo "      frontmatter description so they can activate from cold prompts."
+  fi
+fi
+
 if [[ $RATE -ge 80 ]]; then
-  echo "  ✅ Good trigger rate (≥ 80%)"
+  echo "  ✅ Good overall trigger rate (≥ 80%)"
 elif [[ $RATE -ge 50 ]]; then
-  echo "  ⚠️  Moderate trigger rate (50-79%) — consider improving description"
+  echo "  ⚠️  Moderate overall trigger rate (50-79%) — consider improving description"
 else
-  echo "  ❌ Low trigger rate (< 50%) — description needs significant improvement"
+  echo "  ❌ Low overall trigger rate (< 50%) — description needs significant improvement"
 fi
 
 echo ""

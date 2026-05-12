@@ -14,7 +14,7 @@ A 400+ line `SKILL.md` mixing rules, workflows, references, and pitfalls is a co
 
 ```
 skills/<name>/
-├── SKILL.md           # ≤ 100 lines: routing only
+├── SKILL.md           # description ≤ 25 + body ≤ 90 lines (dual budget): routing only
 ├── rules/             # stable constraints, by domain
 ├── workflows/         # step-by-step procedures, one per task
 └── references/        # architecture, gotchas

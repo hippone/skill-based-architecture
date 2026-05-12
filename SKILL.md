@@ -27,13 +27,13 @@ Restructure oversized single-file Skills or scattered project rules into a well-
 
 ## Progressive Rigor
 
-Grow only under pressure. Tiers: **Single-file** (`SKILL.md` only, < 3 topics) → **Folder-light** (`+ rules/`, 3–5 topics or 1 recurring workflow) → **Full** (`+ workflows/` + `references/` + thin shells; ≥ 3 routed tasks, gotcha log, or multi-harness repo). Upgrade triggers: SKILL.md > 100 lines, same pitfall surfaces twice, a task needs step-by-step instructions, or two harnesses share routing. Downgrade when content shrinks. Details: [references/progressive-rigor.md](references/progressive-rigor.md).
+Grow only under pressure. Tiers: **Single-file** (`SKILL.md` only, < 3 topics) → **Folder-light** (`+ rules/`, 3–5 topics or 1 recurring workflow) → **Full** (`+ workflows/` + `references/` + thin shells; ≥ 3 routed tasks, gotcha log, or multi-harness repo). Upgrade triggers: SKILL.md body > 90 lines or description > 25 lines, same pitfall surfaces twice, a task needs step-by-step instructions, or two harnesses share routing. Downgrade when content shrinks. Details: [references/progressive-rigor.md](references/progressive-rigor.md).
 
 ## Target Structure
 
 ```text
 skills/<name>/
-├── SKILL.md          # ≤100 lines: always-read list, task routing, priority
+├── SKILL.md          # dual budget (description ≤ 25 + body ≤ 90 lines): always-read list, task routing, priority
 ├── rules/            # Long-lived constraints (what is always true)
 ├── workflows/        # Step-by-step procedures (how to do a task)
 ├── references/       # Background: architecture, pitfalls, indexes
@@ -46,7 +46,7 @@ Root entries (`AGENTS.md`, `CLAUDE.md`, `CODEX.md`, `GEMINI.md`, `.cursor/rules/
 
 ## Core Principles
 
-1. **Single concise entry** — `SKILL.md` ≤ 100 lines; it navigates, not exhausts. ✓ Check: `wc -l` ≤ 100; over → move content to sub-files.
+1. **Single concise entry** — `SKILL.md` keeps a dual budget: description ≤ 25 lines (trigger phrases + activation) + body ≤ 90 lines (navigation). It navigates, not exhausts. ✓ Check: smoke-test reports both separately; over either → split intent clusters / move detail to sub-files.
 2. **One skill folder** — all formal docs under `skills/<name>/`, not scattered at repo root. ✓ Check: `ls *.md` at root shows only thin shells, not rule/workflow files.
 3. **Rules ≠ Flows** — `rules/` for constraints, `workflows/` for procedures. ✓ Check: any numbered steps in `rules/`? Any "always/never" in `workflows/`? Either = mixing.
 4. **Routing.yaml as source** — task routes live in `routing.yaml`; shells only say how to read it. ✓ Check: route changed without running sync/check? No → drift risk.

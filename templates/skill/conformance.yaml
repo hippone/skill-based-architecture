@@ -12,7 +12,7 @@
 # Concerns NOT covered here (use the listed mechanism instead):
 #   - "downstream changelog impact for upstream edit"  → check-upstream-changes.sh + UPSTREAM-CHANGES.md
 #   - "routing/manifest in sync with generated blocks" → sync-routing.sh --check
-#   - "file size / SKILL.md ≤ 100 lines"               → smoke-test.sh / check-growth-health.sh
+#   - "file size / SKILL.md dual budget (desc ≤ 25 + body ≤ 90)" → smoke-test.sh / check-growth-health.sh
 #   - "trigger phrase routes to expected workflow"    → check-self-scenarios.sh
 #
 # This file fills a different gap: "did downstream forget to copy a mandatory

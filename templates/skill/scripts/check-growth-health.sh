@@ -54,6 +54,44 @@ check_lines() {
   fi
 }
 
+# Dual-budget reporter for SKILL.md — keeps activation gate (description) and
+# navigation hub (body) on separate growth tracks. Mirrors the hard gate in
+# templates/skill/scripts/smoke-test.sh (description ≤ 25, body ≤ 90).
+check_skill_md_dual() {
+  local file="$1" label="$2"
+  [[ -f "$file" ]] || return
+  local desc body
+  desc=$(awk '
+    /^---$/ { f++; next }
+    f==1 && /^description:/ { in_desc=1; count++; next }
+    f==1 && in_desc && /^[a-zA-Z_][a-zA-Z0-9_-]*:/ { in_desc=0 }
+    f==1 && in_desc { count++ }
+    END { print count+0 }
+  ' "$file")
+  body=$(awk '
+    /^---$/ { f++; next }
+    f >= 2 { count++ }
+    END { print count+0 }
+  ' "$file")
+  [[ "$body" -eq 0 ]] && body=$(line_count "$file")
+
+  local desc_max=25 body_max=90
+  if [[ "$desc" -gt "$desc_max" ]]; then
+    status_line "REVIEW" "$label description" "$desc lines > $desc_max"
+  elif [[ "$desc" -ge $((desc_max * 9 / 10)) ]]; then
+    status_line "WATCH" "$label description" "$desc lines near $desc_max"
+  else
+    status_line "OK" "$label description" "$desc lines <= $desc_max"
+  fi
+  if [[ "$body" -gt "$body_max" ]]; then
+    status_line "REVIEW" "$label body" "$body lines > $body_max"
+  elif [[ "$body" -ge $((body_max * 9 / 10)) ]]; then
+    status_line "WATCH" "$label body" "$body lines near $body_max"
+  else
+    status_line "OK" "$label body" "$body lines <= $body_max"
+  fi
+}
+
 count_always_read() {
   local manifest="$1"
   awk '
@@ -137,9 +175,9 @@ echo "Root: $ROOT"
 echo ""
 
 if [[ -f "$ROOT/SKILL.md" ]]; then
-  check_lines "$ROOT/SKILL.md" 100 "SKILL.md"
+  check_skill_md_dual "$ROOT/SKILL.md" "SKILL.md"
 elif [[ -f "$ROOT/SKILL.md.template" ]]; then
-  check_lines "$ROOT/SKILL.md.template" 100 "SKILL.md.template"
+  check_skill_md_dual "$ROOT/SKILL.md.template" "SKILL.md.template"
 fi
 
 check_manifest "$ROOT/routing.yaml" "routing.yaml"
@@ -147,7 +185,7 @@ check_workflows "$ROOT"
 check_scripts "$ROOT"
 
 if [[ -d "$ROOT/templates/skill" ]]; then
-  check_lines "$ROOT/templates/skill/SKILL.md.template" 100 "template SKILL.md"
+  check_skill_md_dual "$ROOT/templates/skill/SKILL.md.template" "template SKILL.md"
   check_manifest "$ROOT/templates/skill/routing.yaml" "template routing.yaml"
   check_workflows "$ROOT/templates/skill"
   check_scripts "$ROOT/templates/skill"

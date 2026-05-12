@@ -7,14 +7,14 @@ Not every skill needs the full `skills/<name>/` tree. Start at the smallest tier
 | Tier | Layout | Use when | Typical SKILL.md size |
 |---|---|---|---|
 | **Single-file** | `SKILL.md` only (official minimum) | < 3 topics, no task routing needed, no lesson-capture history | ≤ 60 lines |
-| **Folder-light** | `skills/<name>/SKILL.md` + `rules/` | 3–5 topics, OR 1 recurring workflow that needs step-by-step instructions, OR a growing list of project conventions | 60–100 lines, `rules/` adds 1–3 files |
-| **Full** | `skills/<name>/{SKILL,rules,workflows,references}/` + thin shells + Cursor registration entry | ≥ 3 routed task types, gotcha log needs a home, multi-harness repo (Cursor + Claude + Codex + Gemini), or lessons-learned across multiple sessions | Close to 100 lines, multiple files per subdir |
+| **Folder-light** | `skills/<name>/SKILL.md` + `rules/` | 3–5 topics, OR 1 recurring workflow that needs step-by-step instructions, OR a growing list of project conventions | 60–115 lines total (description + body), `rules/` adds 1–3 files |
+| **Full** | `skills/<name>/{SKILL,rules,workflows,references}/` + thin shells + Cursor registration entry | ≥ 3 routed task types, gotcha log needs a home, multi-harness repo (Cursor + Claude + Codex + Gemini), or lessons-learned across multiple sessions | Up to dual cap (description ≤ 25 + body ≤ 90), multiple files per subdir |
 
 ## Upgrade triggers
 
 Add structure when **any** of these fires, not before:
 
-1. **Line pressure** — `SKILL.md` crosses 100 lines despite compression attempts. Move content to a sub-file in the next tier down (e.g. workflows go to `workflows/` once you have 2+).
+1. **Line pressure** — `SKILL.md` body crosses 90 lines (or description exceeds 25 lines) despite compression attempts. Move body content to a sub-file in the next tier down (e.g. workflows go to `workflows/` once you have 2+); split intent clusters in description when activate-when grows long.
 2. **Recurrence pressure** — the same pitfall is recorded in Common Pitfalls twice, or the same question gets asked by the agent twice in different sessions. Promote it to `references/gotchas.md` with a dedicated section.
 3. **Procedure pressure** — you catch yourself writing "how to do X in steps" inside a rule file. Steps belong in `workflows/`, not `rules/`. Create the `workflows/` directory.
 4. **Harness-sharing pressure** — two harness entries (e.g. `AGENTS.md` and `CLAUDE.md`) need the same route lookup logic, or you're manually keeping them in sync. Move task data into `routing.yaml` and generate thin-shell blocks.
@@ -32,7 +32,7 @@ Over-structuring a small skill:
 
 Under-structuring a growing skill:
 
-- Grows SKILL.md past 100 lines, defeating Principle 1
+- Grows SKILL.md body past 90 lines (or description past 25), defeating Principle 1
 - Mixes rules and workflows in one file, defeating Principle 3
 - Loses routing discipline, forcing the agent to read the whole file for every task
 

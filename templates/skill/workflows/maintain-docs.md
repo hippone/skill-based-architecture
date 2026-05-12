@@ -16,7 +16,7 @@ Check line counts for all files under `skills/{{NAME}}/` and flag those that may
 
 | File type | Reference range | Triggers evaluation | Fragment signal |
 |---|---|---|---|
-| `SKILL.md` | ≤ 100 lines | > 100 lines | — |
+| `SKILL.md` | description ≤ 25 + body ≤ 90 lines (dual budget) | description > 25 (split intent clusters) or body > 90 (move detail) | — |
 | `rules/*.md` | 50–200 lines | > 200 lines | < 30 lines |
 | `workflows/*.md` | 30–150 lines | > 150 lines | < 15 lines |
 | `references/*.md` | 50–300 lines | > 300 lines | < 30 lines |
