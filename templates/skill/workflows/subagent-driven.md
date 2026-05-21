@@ -2,50 +2,68 @@
 
 > Two modes — pick the one that fits the task shape:
 >
-> - **Mode 1: Surface (Sub-step Auxiliary Delegation)** — main-agent inline is the default. Inside any workflow, before doing a sub-step, ask "主 agent 看这一步的全过程是多余的吗?". If yes (a 5-signal short list), surface a reverse-question proposal to the user; on Yes, dispatch one subagent for that single sub-step, then return to main-agent inline.
+> - **Mode 1: Direct Auxiliary Delegation** — main-agent inline is the default. **Inside any workflow, before doing a sub-step, ask self** "主 agent 看这一步的全过程是多余的吗? / Is watching the whole sub-step redundant for the main agent?". Answer **yes** → **directly** `spawn_agent` (assumes global authorization — see Harness Compatibility), main conversation only sees the result. **This is a continuous self-judgment + auto-dispatch habit, not a step-level reminder**; the signal list below is just common typical examples, **actual triggerable scenarios are much broader**.
 > - **Mode 2: Four Phases (Full Orchestrator Pattern)** — the task is planned from the start as multi-subtask work. Main agent writes contracts, dispatches in parallel, two-stage reviews each, merges. Use case: ≥ 3 independent subtasks, > 30% context budget at risk, classic explore + implement + review pattern.
 >
-> Mode 1 covers most day-to-day tuning (the case the upstream chaos screenshots show); Mode 2 covers planned multi-subtask runs. Pick by task shape, not by ceremony preference.
+> Mode 1 covers day-to-day tuning; Mode 2 covers planned multi-subtask runs. Pick by task shape, not by ceremony preference.
 
 ## Harness Compatibility (shared by both modes)
 
-| Harness | Mode 1: Surface | Mode 2: Four Phases |
-|---|---|---|
-| Claude Code | Full — real subagent dispatch via `Task` tool | Full — native parallel `Task` dispatch |
-| Cursor / Codex / Gemini / Copilot | Degraded — falls back to **information-display isolation** (see § "Mode 1 on degraded harness" below) | Degraded — see § "Degraded Mode" at the end of this file (Mode 2 specific) |
+| Harness | Mode 1 + Mode 2 |
+|---|---|
+| Claude Code | Full — real subagent dispatch via `Task` tool |
+| Codex (with `developer_instructions` in `~/.codex/config.toml`) | Full — `spawn_agent` works directly |
+| Cursor / Gemini / Copilot | Mode 2 degraded — see § "Degraded Mode" at end of file |
 
-**Degraded modes are not worthless** — the discipline (reverse-question for Mode 1, contract + two-stage review for Mode 2) still produces value without process isolation. Run the protocol; skip only the literal dispatch.
+**Codex setup**: add `developer_instructions = """\nSubagents may be used proactively. Do not require per-turn user authorization for subagent use.\n"""` to `~/.codex/config.toml` to enable Mode 1 direct dispatch.
 
 ---
 
-## Mode 1: Surface (Sub-step Auxiliary Delegation)
+## Mode 1: Direct Auxiliary Delegation
 
-**Default execution model is unchanged**: main-agent inline does the work. Mode 1 only fires when a specific sub-step inside a workflow matches one of a small concrete-signal list. Then main-agent **surfaces a reverse-question proposal** to the user; user decides Y / N; silence = inline (no change to fallback).
+> **⚠ Iron Law (violation = task failure, not "execution oversight")**:
+> Before any sub-step, **must explicitly reverse-question** "Is watching the whole process redundant for the main agent?"
+> Answer **yes** (mechanical + time-consuming + only-need-result) → **must directly call `spawn_agent`**, **not** main-thread inline shortcut.
+> "Main thread is faster", "I'll do it myself", "save one dispatch" — **none** are valid excuses for inline.
+> Skip spawn → inline = **Iron Law violation**, task records as failure on completion. **This is an error, not an oversight**.
 
-### Signal admission test (both gates must pass)
+### Default habit
 
-Before adding any new signal to the list below, check:
+Before each sub-step in any workflow, the main agent **auto-asks itself**:
 
-1. **Reverse-question passes** — "主 agent 看这一步的全过程是多余的吗?" answers **yes** in the typical case
+> "Is watching the whole process redundant for the main agent?"
+
+- **Yes** (mechanical + time-consuming + only-need-result) → auxiliary, **directly** call `spawn_agent`, main conversation only sees result
+- **No** (discussion / decision / clarification with user is main-agent job) → inline
+
+This is a **continuous self-judgment + auto-dispatch habit**, not a step-level reminder. The signal list below is just common examples — **actual triggerable scenarios are broader**.
+
+### Signal admission test (gatekeeper for adding new signals)
+
+agent reverse-questions every sub-step freely, **not gated by the signal list**. The two gates below are **for adding a new typical scenario to the list**, preventing list bloat:
+
+1. **Reverse-question passes** — "Is watching the whole process redundant?" answers **yes** in typical cases
 2. **Scenario is specific** — mechanical + time-consuming + only-need-result
 
-Pass only #1 (reverse-question yes but scenario fuzzy) → don't add; agent will start "surfacing everything".
-Pass only #2 (scenario concrete but reverse-question no) → don't add; overlaps with main-agent's actual job.
+Pass only #1 (reverse-question yes but scenario fuzzy) → don't add (would encourage "everything is redundant").
+Pass only #2 (scenario concrete but reverse-question fails) → don't add (overlaps with main-agent's actual job).
 
-### Signal list (5 reverse-question signals)
+### Signal list (5 typical examples, not exhaustive)
 
-1. **"主 agent 看测试跑的全过程是多余的吗?"** — running tests (≥ 30s; any `mvn test` / `pytest` / `jest` / `go test`) → verify subagent
-2. **"主 agent 看构建 / 依赖解析全过程是多余的吗?"** — running build / dependency resolution (`mvn install`, `gradle build`, `npm install`, `npm build`) → build subagent. Project-level rules may suppress this signal (e.g., a project that requires the human to run Maven through their IDE).
-3. **"主 agent 读完所有 grep / find usage 命中是多余的吗?"** — wide search (≥ 10 file hits) → explore subagent
-4. **"主 agent 逐个文件改这堆同型编辑是多余的吗?"** — batch homogeneous edits (≥ 5 files, same-shape import add/remove / rename / annotation add) → refactor subagent (can hand off to `refactor-fanout.md`)
-5. **"主 agent 翻完这段代码找 pattern 是多余的吗?"** — code scan for pattern (single file ≥ 1000 lines, or multi-file cumulative ≥ 1500 lines, looking for N callsites / patterns) → scan subagent
+1. **Running tests** — any `mvn test` / `pytest` / `jest` / `go test` etc. (time-consuming; main conversation doesn't need every line of output)
+2. **Running build / dependency resolution** — `npm install` / `gradle build` / `mvn install` etc.
+3. **Wide search / find usage** — accumulated file hits enough to drown main conversation (typically ≥ 10, but not limited)
+4. **Batch homogeneous edits** — N files getting same-shape import add/remove / rename / annotation; if planned as fanout from start, go to [`refactor-fanout.md`](refactor-fanout.md) directly
+5. **Scanning a large code region for pattern** — flipping through code to find a few callsites
+
+**Not limited to this list**. Any sub-step matching all three traits (mechanical + time-consuming + only-need-result) qualifies.
 
 ### Job-vs-auxiliary distinction (not file-counting; ask what the content is used for)
 
 After reading / running, ask:
 
 - Does the main agent **need the content as discussion / decision substrate** (user might ask about details, design choice needs reference, explanation to user uses it) → **main-agent job**, do it inline
-- Does the main agent **only need the result for the next decision** (the process won't be referenced again, user won't ask "how did you run it") → **auxiliary**, reverse-question, possibly dispatch
+- Does the main agent **only need the result for the next decision** (process won't be re-referenced, user won't ask "how did you run it") → **auxiliary**, can dispatch
 
 Examples:
 
@@ -56,72 +74,77 @@ Examples:
 | Find 12 callsites of X; pick which to change | Only need the list | **Auxiliary** (dispatch for list) |
 | Find 12 callsites of X; review each to decide change | Need each file's content | Main-agent job |
 
-**Key**: the same action (read N files) can be main-agent's job or auxiliary, **depending on what the content is used for**. The cut is by purpose, not by action size.
+**Key**: same action (read N files) can be main-agent's job or auxiliary, **depending on what the content is used for**. The cut is by purpose, not by action size.
 
 ### Decision flow
 
 ```text
 main agent runs workflow inline
     ↓
-about to do next sub-step: ask self "看全过程多余吗?"
+about to do next sub-step: ask self "Is watching the whole process redundant?"
     ├── no, main-agent's job  → inline
     └── yes, auxiliary (mechanical + time-consuming + only-need-result)
             ↓
-        reverse-question surface to user
-            ├── Yes → dispatch one subagent for this sub-step → subagent
-            │           returns result → main agent continues inline
-            └── No / silence → main agent does this sub-step inline
+        directly dispatch one subagent (spawn_agent)
+            → subagent returns result → main agent continues inline
 ```
 
 **Properties**:
 
-- Signal recognition is an **agent judgment**, not a mechanical measurement; the admission test (reverse-question + specific scenario) is the discipline
+- Signal recognition is **agent judgment**, not mechanical measurement
 - Yes dispatches a **single sub-step**, not the remaining whole task
 - After subagent returns, main agent goes back to inline as default
-- Same task may trigger multiple Surface events (one for testing, one for wide grep, etc.); each is independent — previous Y/N doesn't affect the next
+- Same task may trigger multiple dispatch events (one for testing, one for wide grep, etc.); each is independent
+- **No user Y/N round-trip** — global authorization (CC's native dispatch + Codex `developer_instructions`) makes this direct
+
+### Negative list (never delegate, no matter how time-consuming)
+
+The following are **main-agent job, reverse-question should answer "no"**:
+
+- **User-requested core implementation** (business logic, API design, core algorithms)
+- **Architecture decisions** (module boundaries, dependency direction, schema, serialization protocols)
+- **Security-sensitive operations** (credentials, permissions, encryption, SQL injection risk points)
+- **Destructive operations** (`rm -rf`, `git reset --hard`, production config changes, schema deletion / reset, force-push to release branches)
+- **Deep-reasoning judgments** (root cause analysis, design tradeoffs, complex business rule interpretation)
+- **Back-and-forth user discussion / clarification** (requirement clarification, scope confirmation, tradeoff decisions)
+
+Subagent delegation **only applies to** auxiliary mechanical tasks. Trying to delegate items from the list above = **wrong**, these are main-agent's job, do inline.
+
+**Reverse-failure Pitfall**: delegating core implementation / architecture decisions to subagents. Subagent has no user context → its judgment will drift from actual user needs → main conversation must overturn during review. **2x slower than inline**.
+
+### Common failure modes (Pitfalls)
+
+- **Inspect → Dispatch transition missed (most severe in practice)** — After main agent completes pre-work (reading rules / scanning report / identifying multiple independent targets), it continues inline by inertia into reading implementation details / writing files, **without explicitly switching phase** at the "multiple targets identified" moment. Failure language anchor: **"extending report-screening phase main-thread work into implementation-phase serial work"**.
+  - Correct action:
+    1. **Stop immediately after identifying multiple targets**, explicitly judge: "Are these targets multiple independent + parallelizable?"
+    2. **Yes** (multiple test classes / modules / callsites) → **explicitly announce division + `spawn_agent` separately**; main thread only does integration + verification
+    3. **No** (single target / must serialize) → continue inline
+    4. **Forbidden extension**: **cannot** go from "I identified N targets" directly into "I read the first target's implementation details"
+  - Self-check reverse-question: "Am I in 'pre-work' phase or 'implementation' phase? **If multi-target identified, should I stop and switch phase?**"
+- **Skip reverse-question, directly inline** — agent self-justifies "main thread is faster" without asking. **Violates Iron Law**
+- **Asked but didn't dispatch** — reverse-question answered "yes" (confirmed auxiliary), but still inline. **Answer must lead to action**: yes → directly spawn; no → inline
+- **Inline-job mis-dispatched** — delegating core implementation / architecture to subagent. See Negative list reverse-failure
 
 ### Signal is *not*
 
-- Not a task-size signal (test ≥ 3 cycle / refactor ≥ 5 callsites / large file / cross-repo — all rejected; reverse-question doesn't pass on them)
+- Not a task-size signal (test ≥ 3 cycle / refactor ≥ 5 callsites / large file / cross-repo — all rejected; reverse-question fails on them)
 - Not a file-count or time threshold (too coarse; not causal with main-conversation pollution)
 - Not "anything time-consuming the main agent does should be dispatched" — discussing code, clarifying with user, designing, deciding-where-to-change are all main-agent's job even if time-consuming
 - Not a checkpoint block in workflow files (signal recognition is in the agent's head)
-- Not a PostToolUse hook (simple tasks must have zero overhead; hooks violate that)
-
-### Mode 1 on degraded harness (Codex / Cursor / Gemini): information-display isolation
-
-These harnesses have no native dispatch. Mode 1 still applies — falls back to **display isolation**:
-
-- **Yes** = main agent runs the sub-step but **only pastes the conclusion**:
-  - Test pass → "passed" (one line)
-  - Test fail → "failed: `<short reason>`, missing mock `<specific>`" (2-3 lines)
-  - Grep hits → hit list (one line per hit, no file contents)
-  - Batch edit → diff summary (`changed N files, main edits: <one line>`; full diff on request)
-- **No** = main agent runs the sub-step and **pastes full output** (traditional inline)
-
-CC vs degraded comparison:
-
-| | CC (Yes) | Degraded (Yes) |
-|---|---|---|
-| Context isolation | Real (separate subagent context) | None (same context) |
-| Main conversation visual | Clean (subagent internals never visible) | Compressed (conclusion only) |
-| Token / context accumulation | Low (main context doesn't grow) | **Same as No** (agent still reads everything) |
-| `/compact` risk | Low | **Same as No** |
-
-The real benefit on degraded harnesses: **user reading conversation history isn't drowned in stack traces**. Token cost doesn't drop, but display density does. Yes / No actually produce different visible outcomes on degraded harnesses, not just on CC.
+- Not a PostToolUse hook (simple tasks must have zero overhead)
 
 ---
 
 ## Mode 2: Four Phases (When to Invoke This Mode)
 
-Trigger Mode 2 — not just inline + occasional Mode 1 Surface — when **any** of:
+Trigger Mode 2 — not just inline + occasional Mode 1 direct dispatch — when **any** of:
 
 - The task decomposes into **≥ 3 independent subtasks** (independent = can be specified, executed, and verified without reading each other's output)
 - A single subtask will consume **> 30% of remaining context budget** if done inline
 - The work involves **exploratory search + implementation + review** (classic context-pollution pattern)
 - You are about to start a **multi-hour autonomous run**
 
-If none of the above apply, **don't invoke Mode 2** — Mode 1 Surface inside an ordinary workflow handles smaller cases without ceremony.
+If none of the above apply, **don't invoke Mode 2** — Mode 1 direct dispatch inside an ordinary workflow handles smaller cases without ceremony.
 
 ### Phase 1 — Plan
 
@@ -180,7 +203,29 @@ If Stage B finds issues but Stage A passed → record the issues, then decide: r
 ### Phase 4 — Merge or Reject
 
 - **Merge**: only when both stages pass. Write one summary line per merged contract into the running task log.
-- **Reject**: cancel the worker's changes (`git restore`, revert the diff, or discard the worker's patch). Rewrite the contract. Re-dispatch. Do **not** fall into the "I'll just fix it myself in the main context" trap — that's the exact failure mode subagent-driven development is designed to prevent. See the Rationalizations table.
+- **Reject**: cancel the worker's changes (`git restore`, revert the diff, or discard the worker's patch). Rewrite the contract. Re-dispatch. Do **not** fall into the "I'll just fix it myself in the main context" trap.
+
+---
+
+## Interception Transparency Rule (applies to all tools, both modes)
+
+When the agent runs into **any** constraint / interception / permission denial / unavailable tool that it cannot resolve unilaterally, it **must immediately stop and tell the user** — **silent fall back / fallback to plan B / skip / degrade is forbidden**.
+
+Typical: `spawn_agent` blocked by some platform constraint, tool permission denied, command needs interactive input but environment doesn't support, file / network access blocked. **Any obstruction counts**, not limited to this list.
+
+### Wrong behaviors
+
+- ❌ Silent fall back to inline without telling user
+- ❌ Switch to plan B (other tool / other path) without telling user
+- ❌ Conflate "got blocked" with "I judged this shouldn't be done"
+
+### Right action
+
+1. Stop immediately, tell the user: "I tried X, got blocked by Y / error Z"
+2. Offer choices: user does it / I use alternative method W / skip and continue / you authorize me
+3. Wait for user decision before proceeding
+
+(Distinction from § Mode 1 Decision: that's **decision-time** self-judgment; this is **execution-time** obstruction that must be surfaced.)
 
 ---
 
@@ -194,26 +239,29 @@ If Stage B finds issues but Stage A passed → record the issues, then decide: r
 | "Parallel dispatch is risky, I'll do them sequentially" | Sequential dispatch without a data dependency is a latency defect. Justify it in writing or parallelize. |
 | "The worker can figure out the acceptance criteria from context" | Workers have no context. That's the point. Write the criteria. |
 | "I'll let the worker spawn its own helpers" | Recursive dispatch makes review impossible. Flatten the plan in Phase 1. |
-| "Mode 1 Surface: I'll skip the reverse-question, I know this is auxiliary" | The reverse-question is the admission test. Skipping it is how main agent ends up doing auxiliary work it shouldn't. Just ask the question. |
-| "The user is busy, I'll skip the Mode 1 Surface prompt and dispatch silently" | Silent dispatch removes user control. Surface, then take silence as "continue inline" — that's by design. |
+| "Mode 1: I'll skip the reverse-question, I know this is auxiliary" | The reverse-question is the admission test. Skipping it = inline on auxiliary tasks that should have been dispatched. Just ask the question. |
+| "Mode 1: main thread is faster, I'll do it myself" | **Imagined-pain engineering reverse case** — agent self-justifies inline on auxiliary work. Once reverse-question answers "yes", **directly dispatch**. No "I'll do this one inline" exception. |
+| "Multi-target identified, but I'll start implementing the first one to save time" | **Inspect → Dispatch transition missed**. Stop at "multi-target identified", explicitly switch phase, then dispatch. No "I'll just do the first one inline". |
 
 ## Red Flags — STOP (both modes)
 
 Stop the workflow and reassess if any of these appear:
 
 - You find yourself reading worker output and editing it inline in the main context
-- You dispatched a worker without a written contract (Mode 2) or without surfacing the option to the user (Mode 1)
+- You dispatched a worker without a written contract (Mode 2) or skipped the reverse-question for an auxiliary sub-step (Mode 1)
 - A worker returned, Stage A failed, and you're tempted to "just accept it and fix later"
 - You're on the third re-dispatch of the same contract → the contract is wrong, not the worker
 - You notice the main context has grown past 50% — you're losing the point of the pattern
 - A worker asks a clarifying question mid-task → cancel, rewrite contract, re-dispatch
-- Mode 1: you surfaced "看全过程多余吗" on a main-agent's job task (e.g., reading a single file to understand a bug) → the admission test failed; revisit the job-vs-auxiliary distinction
+- Mode 1: reverse-question "Is watching whole process redundant?" answered on a main-agent's job task (reading 1-3 files to understand a bug) → admission test failed; revisit job-vs-auxiliary distinction
+- Mode 1: reverse-question answered "yes" but you still inlined the work → **Iron Law violation**
+- **Any tool / permission / constraint blocked you and you didn't surface it to the user** → see § Interception Transparency Rule
 
 ---
 
 ## Degraded Mode (Mode 2 specific, no native dispatch)
 
-When the harness has no subagent primitive and you're invoking **Mode 2** (Mode 1 on degraded harnesses uses display isolation; see § "Mode 1 on degraded harness" above), simulate the discipline:
+When the harness has no subagent primitive and you're invoking **Mode 2** (Cursor / Gemini / Copilot without `Task`-like tools), simulate the discipline:
 
 1. Write the contract in a scratch file
 2. Clear your mental state: re-read **only** the contract, ignore prior conversation

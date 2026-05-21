@@ -48,6 +48,63 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-21 - Mode 1 → Direct Auxiliary Delegation + Inspect→Dispatch Pitfall + Interception Transparency
+
+- Upstream commit: pending in this working tree
+- Changed areas: rewrote `templates/skill/workflows/subagent-driven.md`
+  (Mode 1 章节 renamed "Direct Auxiliary Delegation", removed
+  degraded-harness information-display isolation entire section,
+  simplified Decision flow to no Y/N user round-trip, added Iron Law
+  declaration, added Negative list + reverse-failure Pitfall, added
+  Inspect→Dispatch transition Pitfall with named anchor, added new
+  top-level "Interception Transparency Rule" section, updated
+  Rationalizations + Red Flags); added top-level pervasive
+  reverse-question cross-refs to `fix-bug.md`, `plan-feature.md`,
+  `change-managed.md`, `refactor-fanout.md`.
+- Why it matters: the chaos project's subagent-driven Mode 1 went
+  through 6+ iteration rounds on real chaos task screenshots (5/19 →
+  5/21). Key empirical findings now propagated to upstream:
+    1. **Global authorization removes the Y/N round-trip** — once
+       `~/.codex/config.toml` has `developer_instructions = "Subagents
+       may be used proactively..."`, Codex no longer guards
+       `spawn_agent`. Earlier "被拦截才问" / "Surface Y/N then spawn"
+       designs were Codex workaround content; obsolete with global
+       config.
+    2. **Inspect → Dispatch transition** is the most severe real
+       failure mode observed — main agent finishes pre-work (reading
+       rules / report / identifying multiple targets) and continues
+       inline by inertia into implementation, missing the explicit
+       phase switch. Anchor name lets agent self-check and user
+       interrupt use the same vocabulary.
+    3. **Interception transparency is a universal rule**, not just
+       a `spawn_agent` workaround — any tool / permission / constraint
+       block should surface to the user, not silently fall back to
+       plan B. This is a separate concern from Mode 1's decision-time
+       self-judgment.
+    4. **LLM bias is real and structural** — even with Iron Law +
+       named Pitfalls + explicit two-step separation, the agent will
+       sometimes skip the reverse-question and inline. Soft rules
+       improve the trigger rate but don't root-cause it. User
+       monitoring remains the necessary backstop. Documented in the
+       Pitfalls section.
+- Downstream refresh guidance: for each downstream `subagent-driven.md`:
+    1. Replace Mode 1 章节 header / content with the new "Direct
+       Auxiliary Delegation" version
+    2. Remove the "Mode 1 on degraded harness: information-display
+       isolation" section entirely (obsolete with global Codex auth)
+    3. Add the new "Interception Transparency Rule" section
+    4. Update Decision flow to remove Y/N round-trip
+    5. Update Rationalizations + Red Flags per upstream
+  For each of `fix-bug.md` / `plan-feature.md` / `change-managed.md` /
+  `refactor-fanout.md`: add top-level pervasive reverse-question
+  cross-ref. Project-specific workflows (e.g. chaos's
+  `implement-feature.md`, chaos_web's `add-page-or-module.md` etc.)
+  should mirror the same top-level cross-ref. Downstream should also
+  consider adding the Inspect → Dispatch Pitfall + Negative list +
+  Interception transparency content somewhere always-read (e.g.
+  `rules/project-rules.md`) — chaos puts it there, you can too.
+  No routing.yaml or conformance.yaml changes required.
+
 ## 2026-05-20 - Surface mode in subagent-driven (Mode 1) — sub-step auxiliary delegation
 
 - Upstream commit: pending in this working tree

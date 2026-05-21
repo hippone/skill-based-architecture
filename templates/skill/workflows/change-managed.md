@@ -1,5 +1,7 @@
 # Change-Managed Workflow
 
+> **Pervasive reverse-question — default habit**: Before each sub-step, ask "Is watching the whole process redundant for the main agent?" If yes (mechanical + time-consuming + only-need-result) → **directly** `spawn_agent` (global authorization assumed), main conversation only sees the result. See [`subagent-driven.md` § Mode 1: Direct Auxiliary Delegation](subagent-driven.md#mode-1-direct-auxiliary-delegation). **Not limited to specific list**; if planned as fanout refactor from start, go to [`refactor-fanout.md`](refactor-fanout.md) directly.
+
 Use this for non-bug changes where partial edits can create drift: new features, refactors, optimizations, route changes, generated/copied files, shared configuration, or any change with multiple derived targets.
 
 ## Mandatory Pre-Step (cannot skip)

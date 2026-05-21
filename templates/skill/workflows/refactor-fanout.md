@@ -1,5 +1,7 @@
 # Refactor Fan-out Workflow
 
+> **Pervasive reverse-question — default habit**: Inside this workflow's Phase 2 batch edit (and any other sub-step), ask "Is watching the whole process redundant for the main agent?" If yes → **directly** `spawn_agent` per Subagent Contract format. See [`subagent-driven.md` § Mode 1: Direct Auxiliary Delegation](subagent-driven.md#mode-1-direct-auxiliary-delegation) for the trigger criteria and [`subagent-driven.md` § Mode 2: Four Phases](subagent-driven.md#mode-2-four-phases-when-to-invoke-this-mode) for the full multi-batch orchestration this workflow uses.
+
 Use this for refactors that touch **N independent usage points** of the same construct: renaming a function across 30 files, changing an API signature with many callers, extracting an interface with multiple implementations, migrating a config key.
 
 For single-region refactors (one file, one component), use `workflows/change-managed.md` instead — subagent dispatch only pays off when the work genuinely fans out.

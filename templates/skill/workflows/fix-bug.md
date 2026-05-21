@@ -1,5 +1,7 @@
 # Fix Bug Workflow
 
+> **Pervasive reverse-question — default habit**: Before each sub-step, ask "Is watching the whole process redundant for the main agent?" If yes (mechanical + time-consuming + only-need-result) → **directly** `spawn_agent` (global authorization assumed), main conversation only sees the result. See [`subagent-driven.md` § Mode 1: Direct Auxiliary Delegation](subagent-driven.md#mode-1-direct-auxiliary-delegation). **Not limited to specific list**, any sub-step may trigger (running tests / wide grep / batch edit / scanning logs…).
+
 ## Mandatory Pre-Step (cannot skip)
 
 **Re-run `SKILL.md` § Session Discipline before starting.** Re-match this bug against Common Tasks, re-read all required files for that route. No exceptions — see SKILL.md for why.
