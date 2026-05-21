@@ -20,7 +20,7 @@
   </a>
 </p>
 
-[English](README.md) | **中文**
+<p align="center"><a href="README.md">English</a> | <strong>中文</strong></p>
 
 一个**面向 AI Agent 规则系统的生命周期管理框架**。把散落的提示词文档(`AGENTS.md`、`CLAUDE.md`、`.cursor/rules/`、README 规则)整理成位于 `skills/<name>/` 下、可路由、可验证、可更新的工程资产。
 

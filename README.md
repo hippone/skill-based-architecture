@@ -20,7 +20,7 @@
   </a>
 </p>
 
-**English** | [中文](README.zh-CN.md)
+<p align="center"><strong>English</strong> | <a href="README.zh-CN.md">中文</a></p>
 
 A **lifecycle framework for AI-agent rule systems.** Turns scattered prompt documents (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules/`, README rules) into routable, verifiable, updatable engineering assets under `skills/<name>/`.
 
