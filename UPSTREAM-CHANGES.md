@@ -48,6 +48,49 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-25 - Blast-radius bucket closure triggers
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `references/protocols.md` — added § "Blast-Radius Buckets (closure
+    trigger refinement)" subsection under Task Closure Protocol.
+    Introduces per-path A/B/C classification (A = full closure incl.
+    smoke + path-integrity gates, B = lightweight AAR only,
+    C = skip closure entirely), the multi-file max-bucket rule, the
+    unknown-path default-B rule, and the "trivial edit in A still =
+    full closure" mechanical rule. Bucket path lists are this repo's
+    specific layout.
+  - `references/self-hosting-shell-base.md` — replaced the 3-bullet
+    task-type closure trigger with a 6-bullet blast-radius bullet
+    block that names A/B/C buckets, key combination rules, the
+    Q&A/read-only exemption, and a pointer to protocols.md for full
+    path lists. All 4 root shells (AGENTS / CLAUDE / CODEX / GEMINI)
+    + `.cursor/rules/workflow.mdc` regenerated via
+    `sync-self-shells.sh`.
+- Why it matters: the prior trigger model (Pure Q&A / Code change /
+  Skill docs) was too coarse — every non-Q&A edit ran lightweight
+  AAR even on README / examples / unlinked references, paying
+  recurring "load template + reason through 4 questions" overhead
+  with near-zero hit rate. Blast-radius keys the trigger off the
+  file path itself, so low-risk content edits (Bucket C) skip
+  closure outright; only entry shells, routing yaml, scripts, and
+  template `.tpl` files (A) still get the full gate.
+- Downstream refresh guidance:
+  - The blast-radius methodology is project-agnostic; the **A/B/C
+    path lists are per-repo**. Downstream projects adopting this
+    refinement should mirror the subsection structure in their own
+    `skills/<name>/references/protocols.md` and fill in their own
+    file classifications.
+  - The shell-base bullets reference blast-radius with parenthetical
+    examples ("entry shells / SKILL.md / routing yaml / scripts /
+    `*.tpl`"). Adjust the parentheticals when porting if the
+    downstream's high-risk surface differs.
+  - **No template file changed.** This is currently a
+    self-hosting-only refinement. Promote to
+    `templates/skill/workflows/update-rules.md` only after a second
+    project pressure-tests the bucket model — applying SKILL.md
+    Rule 10 (no template additions without two-project pressure).
+
 ## 2026-05-21 - Mode 1 → Direct Auxiliary Delegation + Inspect→Dispatch Pitfall + Interception Transparency
 
 - Upstream commit: pending in this working tree

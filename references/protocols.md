@@ -27,6 +27,49 @@ changes are exempt** — do not enter the protocol, do not run AAR, do not run
 `smoke-test.sh`. `smoke-test.sh` is a skill structure/routing/link validator,
 not a default closure action for ordinary code changes or read-only work.
 
+### Blast-Radius Buckets (closure trigger refinement)
+
+The Trigger Policy table in `update-rules.md` asks "what kind of file changed?"
+Blast-radius buckets give the **file-path classification** used to answer that
+for this repo. Classification is by path alone — no content inspection, no
+intent judgment.
+
+**Bucket A — full closure (AAR + smoke-test + path-integrity gates):**
+
+- `SKILL.md`
+- `AGENTS.md`, `CLAUDE.md`, `CODEX.md`, `GEMINI.md` (entry shells)
+- `references/self-hosting-routing.yaml`
+- `scripts/*.sh`
+- `templates/skill/SKILL.md.template`, `templates/skill/routing.yaml`, `templates/skill/*.tpl`
+
+**Bucket B — lightweight AAR only (no smoke-test):**
+
+- `templates/skill/rules/*.md`
+- `templates/skill/workflows/*.md` (excluding `*.example`)
+- `references/*.md` linked from `SKILL.md` body (`progressive-rigor.md`,
+  `multi-skill-routing.md`, `skill-composition.md`, `layout.md`,
+  `protocols.md`)
+- `workflows/full-migration.md`
+
+**Bucket C — skip closure entirely:**
+
+- `README.md`, `README.zh-CN.md`
+- `examples/**`
+- `docs/**`
+- `UPSTREAM-CHANGES*.md`
+- `templates/skill/workflows/*.md.example`
+- `references/*.md` not linked from `SKILL.md` body
+
+**Bucket rules:**
+
+- **Multiple files in one task** → take the max bucket (A > B > C). One A-bucket edit anywhere in the task pulls the whole closure into A.
+- **Path not in any list** → default to B (conservative). Promote to A or C in the next routing maintenance pass.
+- **Trivial edit in an A-bucket file** (typo, whitespace, comment) still triggers full closure. The bucket measures **what could break**, not **what changed semantically**. Letting the model judge "real vs trivial" is unreliable; the rule is mechanical by design.
+
+The bucket lists are **per-repo** — they encode this repo's blast-radius
+layout. A downstream project using the meta-skill maintains its own list under
+the same A/B/C headings, anchored in its own `references/protocols.md`.
+
 > **Reconcile tip (gate 3)**: before writing a recorded lesson, run `bash scripts/skill-asset where <keywords>` to surface existing sections that may already cover the topic. Avoids duplicate sections accumulating across files. See [`scripts/README.md`](../scripts/README.md) for `where` / `related` / `group` usage.
 
 ### AAR Scan Questions

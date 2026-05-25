@@ -1,10 +1,13 @@
 ## Auto-Triggers
 
 - **New task in same session** → re-read `SKILL.md`, re-match the route above, re-read all required files. "I already read it" is not valid — context compresses, routes differ.
-- Closure checks fire by task type — see `templates/skill/workflows/update-rules.md` § Task Closure Trigger Policy:
-  - Pure Q&A / code explanation / read-only investigation / advice with no file changes → no AAR, no smoke-test
-  - Code / behavior changes → lightweight AAR scan; stop if all four answers are "no"
-  - Skill docs / routing / scripts / entry shells / structure changed → run only the route/structure checks matched by the change; **`smoke-test.sh` is not a default closure action for ordinary code changes**
+- Closure checks fire by **blast-radius bucket** (path-based classification of files changed):
+  - **A** (entry shells / SKILL.md / routing yaml / scripts / `*.tpl`) → full AAR + smoke-test + path-integrity gates
+  - **B** (template rules/workflows non-example, references linked from SKILL.md, `workflows/full-migration.md`) → lightweight AAR only
+  - **C** (README, examples, docs, UPSTREAM-CHANGES, references not linked from SKILL.md) → skip closure entirely
+  - Multiple files in one task → take the max bucket. Path not in any list → default B. Trivial edit (typo / whitespace) in an A-bucket file still = full closure (bucket measures *what could break*, not *what changed*).
+  - Pure Q&A / code explanation / read-only investigation / advice with no file changes → exempt; no AAR, no smoke-test.
+  - Full path lists + canonical bucket rules: `references/protocols.md` § Task Closure Protocol.
 - When adding to `templates/` → apply the "would two real projects disagree?" admission test (`templates/ANTI-TEMPLATES.md`)
 
 ## Red Flags — STOP
