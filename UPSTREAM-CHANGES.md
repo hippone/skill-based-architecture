@@ -48,6 +48,44 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-28 - Subagent Mode 1: Parallelism Premise + stale anchor cleanup
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/workflows/subagent-driven.md` — new
+    `### Parallelism Premise (precondition for the Iron Law)` subsection
+    inserted between the Iron Law block and `### Default habit`. Adds a
+    third question before every `spawn_agent`: "what is the main agent
+    doing **while** the subagent runs?" Without parallel work the
+    dispatch is indirection theater — same wall-clock as inline plus
+    coordination overhead, zero efficiency gain. Includes a
+    context-isolation exception for cases where inline reads would
+    drown the main context with raw file content.
+  - `templates/skill/workflows/{plan-feature,change-managed,fix-bug}.md` —
+    three stale `#mode-1-surface-sub-step-auxiliary-delegation` anchor
+    fragments repaired to `#mode-1-direct-auxiliary-delegation`, with
+    the display text "§ Mode 1: Surface" updated to
+    "§ Mode 1: Direct Auxiliary Delegation". Followup to upstream
+    `c0bc072` (2026-05-20) which renamed the Mode 1 heading but left
+    these cross-refs stale.
+- Why it matters: the existing Iron Law's "mechanical + time-consuming +
+  only-need-result" trigger implicitly assumed the main agent has parallel
+  work, but never said so. Agents would `spawn_agent`, then idle waiting
+  for the result, paying coordination cost with no wall-clock gain.
+  Parallelism Premise makes the precondition explicit and surfaces the
+  honest context-budgeting exception. The anchor cleanup is path-integrity
+  debt from `c0bc072`; discovered via the cut/stop (C) audit, not via a
+  user trip — but it would silently misroute any agent following the link.
+- Downstream refresh guidance:
+  - Port the `Parallelism Premise` subsection verbatim into your local
+    `subagent-driven.md` between Iron Law and `Default habit`. The
+    principle is project-agnostic; only adjust path references inside
+    the examples if your skill renames Mode 1's framing.
+  - Search local workflows for any `#mode-1-surface-sub-step-auxiliary-delegation`
+    references and replace with `#mode-1-direct-auxiliary-delegation`.
+    If you haven't pulled the `c0bc072` rename yet, port both in the
+    same pass.
+
 ## 2026-05-25 - Blast-radius bucket closure triggers
 
 - Upstream commit: pending in this working tree

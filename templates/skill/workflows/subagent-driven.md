@@ -27,6 +27,20 @@
 > "Main thread is faster", "I'll do it myself", "save one dispatch" — **none** are valid excuses for inline.
 > Skip spawn → inline = **Iron Law violation**, task records as failure on completion. **This is an error, not an oversight**.
 
+### Parallelism Premise (precondition for the Iron Law)
+
+The Iron Law implicitly assumes the main agent has **parallel work to do** during the subagent's execution. Without parallelism, dispatch is indirection theater: same wall-clock as inline, extra coordination overhead, zero efficiency gain.
+
+Before every `spawn_agent`, ask the **third question**: *"What is the main agent doing **while** the subagent runs?"*
+
+- Concrete answer (other files to read / decision to plan / user clarification pending) → dispatch
+- "Waiting" / "deciding what to do with the result" / vague → inline, or queue parallel work first
+
+✅ Dispatch test-runner → main agent inspects failing module + reads related files → subagent returns → merge result. Wall-clock saved.
+❌ Dispatch test-runner → main agent idles → reads result → continues. Wall-clock identical to inline; indirection added.
+
+**Context-isolation exception**: when inline reads would drown the main context with raw file content (e.g. surveying 15+ files to answer one question), dispatch is defensible without parallelism — but acknowledge the value is context-budgeting, not parallelism. Iron Law's three traits (mechanical + time-consuming + only-need-result) still must hold.
+
 ### Default habit
 
 Before each sub-step in any workflow, the main agent **auto-asks itself**:
