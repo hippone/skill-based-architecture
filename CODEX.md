@@ -29,7 +29,7 @@ For every new task:
 
 ## Red Flags — STOP
 
-- "Just this once I'll skip the AAR" → stop. See `templates/skill/workflows/update-rules.md` § Rationalizations to Reject.
+- "Just this once I'll skip the AAR" → stop. See `templates/skill/workflows/task-closure.md` § Rationalizations to Reject.
 - "I'll inline this in SKILL.md instead of linking a reference" → stop. SKILL.md stays within dual budget (description ≤ 25 + body ≤ 90 lines); content goes to `references/` or `templates/`.
 - "Let me pre-fill a gotchas example so the template feels complete" → stop. `templates/ANTI-TEMPLATES.md` forbids project-specific content in templates.
 

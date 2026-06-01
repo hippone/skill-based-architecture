@@ -126,7 +126,7 @@ rm -rf skills/$NAME .cursor/skills/$NAME
 # then rerun the Quick Start scaffold from the top
 ```
 
-Use `bash skills/$NAME/scripts/smoke-test.sh $NAME --phase N` to verify a specific phase before moving on (the full smoke test only passes after Phase 8). Phase 9 is a manual attestation: at least one row in `workflows/update-rules.md` § Rationalizations to Reject came from a real pressure test.
+Use `bash skills/$NAME/scripts/smoke-test.sh $NAME --phase N` to verify a specific phase before moving on (the full smoke test only passes after Phase 8). Phase 9 is a manual attestation: at least one row in `workflows/task-closure.md` § Rationalizations to Reject came from a real pressure test.
 
 ## Upgrading an Existing Downstream Project
 

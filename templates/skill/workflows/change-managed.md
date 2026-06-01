@@ -24,7 +24,7 @@ Use this for non-bug changes where partial edits can create drift: new features,
 5. **Sync derived files** — run the project-specific generator, sync script, formatter, or manual copy step required by the source-of-truth mapping.
 6. **Run drift checks** — run the project-specific drift/integrity checks. If none exist, compare the fan-out targets manually and consider recording the missing check via Task Closure Protocol.
 7. **Validate behavior** — run the most targeted tests, smoke checks, or manual verification for the changed behavior.
-8. **Run Task Closure Protocol** from `workflows/update-rules.md` — mandatory before declaring completion.
+8. **Run Task Closure Protocol** from `workflows/task-closure.md` — mandatory before declaring completion.
 
 ## Completion Checklist
 

@@ -61,9 +61,9 @@ Threshold: if this change would cause someone to guess wrong on a similar task w
 
 ## Task Closure Protocol
 
-Canonical source: [`templates/skill/workflows/update-rules.md`](templates/skill/workflows/update-rules.md#task-closure-protocol).
+Canonical source: [`templates/skill/workflows/task-closure.md`](templates/skill/workflows/task-closure.md#task-closure-protocol).
 
-This guide intentionally does not restate the protocol. When the protocol changes, update `update-rules.md` first; other files should link, not parallel-define. The invariant is short: no non-trivial task is complete without main-work verification, a 30-second AAR scan, and any triggered path-integrity, route-path, cross-reference, behavior-validation, or external-fact checks.
+This guide intentionally does not restate the protocol. When the protocol changes, update `task-closure.md` first; other files should link, not parallel-define. The invariant is short: no non-trivial task is complete without main-work verification, a 30-second AAR scan, and any triggered path-integrity, route-path, cross-reference, behavior-validation, or external-fact checks.
 
 For the protocol-level concepts (recording threshold, where to record, generalization rule, activation check, when not to record), see [`references/protocols.md`](references/protocols.md).
 
@@ -75,7 +75,8 @@ Real workflow templates live under [`templates/skill/workflows/`](templates/skil
 
 | Template | Purpose |
 |---|---|
-| [`update-rules.md`](templates/skill/workflows/update-rules.md) | The shared exit gate — Task Closure Protocol, AAR, Recording Threshold, Activation Check, Generalization Rule, Rationalizations Table, Rule Deprecation, Post-Update Health Check. Every other workflow's closure step references this file. |
+| [`task-closure.md`](templates/skill/workflows/task-closure.md) | The cross-cutting closure gate every behavior-changing task runs — Task Closure Protocol (Trigger Policy + steps), AAR scan, Rationalizations Table, Red Flags. Every other workflow's closure step references this file. |
+| [`update-rules.md`](templates/skill/workflows/update-rules.md) | Recording mechanics the closure gate calls into — Recording Threshold, Activation Check, Generalization Rule — plus rule sync, Rule Deprecation, and Post-Update Health Check. |
 | [`fix-bug.md`](templates/skill/workflows/fix-bug.md) | Bug-fix workflow with mandatory pre-step (Session Discipline re-read), Fix Impact Analysis (4 questions), and Task Closure Protocol gate. |
 | [`maintain-docs.md`](templates/skill/workflows/maintain-docs.md) | File-health maintenance — size scan, evaluate-split / evaluate-merge / when-not-to gates, reference integrity check. |
 | [`plan-feature.md`](templates/skill/workflows/plan-feature.md) | Feature planning with Question Gate (A/B/C), Complexity Gate, optional plan folder (only `prd.md` required), workflow-state machinery. |

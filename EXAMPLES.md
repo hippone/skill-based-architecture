@@ -130,7 +130,7 @@ description: >
 
 ### Behavior-change UI task that skipped AAR
 
-Project has `workflows/update-rules.md` and thin-shell Auto-Triggers, but a UI fix that changed interaction timing / overlay layering ended right after code verification. Fix the upstream template, not the project: make the workflow's exit gate impossible to read as optional, broaden "behavior change" to explicitly include interaction / schema / renderer / overlay / styling-that-changes-outcomes.
+Project has `workflows/task-closure.md` and thin-shell Auto-Triggers, but a UI fix that changed interaction timing / overlay layering ended right after code verification. Fix the upstream template, not the project: make the closure gate impossible to read as optional, broaden "behavior change" to explicitly include interaction / schema / renderer / overlay / styling-that-changes-outcomes.
 
 ---
 
@@ -152,4 +152,4 @@ These are the only examples actively maintained as a growing corpus — they onl
 ## How to add to this file
 
 - **Patterns and project shapes (above):** only when the same shape recurs across two or more real projects. Speculative variants stay out.
-- **Behavior-layer failures (`examples/behavior-failures.md`):** captured verbatim from a real pressure-test failure only. Same admission rule as the Rationalizations Table in `templates/skill/workflows/update-rules.md`.
+- **Behavior-layer failures (`examples/behavior-failures.md`):** captured verbatim from a real pressure-test failure only. Same admission rule as the Rationalizations Table in `templates/skill/workflows/task-closure.md`.

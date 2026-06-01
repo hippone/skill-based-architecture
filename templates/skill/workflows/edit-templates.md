@@ -33,7 +33,7 @@ If any answer blocks the change, stop and propose the correct destination instea
 4. **Update routing or indexes** — if the new template/workflow must be discoverable, update `SKILL.md`, reference indexes, or canonical routing sources.
 5. **Instantiate a temporary sample** — copy the template into a throwaway project or temp directory, fill required placeholders minimally, and run the relevant smoke checks.
 6. **Check placeholder policy** — intentional placeholder markers may remain in templates; generated sample output must not retain unresolved placeholders.
-7. **Run Task Closure Protocol** from `workflows/update-rules.md` — especially check whether this change reveals a missing template boundary rule.
+7. **Run Task Closure Protocol** from `workflows/task-closure.md` — especially check whether this change reveals a missing template boundary rule.
 
 ## Completion Checklist
 

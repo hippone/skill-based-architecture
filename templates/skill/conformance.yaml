@@ -37,15 +37,20 @@ required_sections:
       - "prd.md"
       - "[workflow-state:planning]"
 
-  # update-rules.md is the canonical home for Task Closure Protocol, AAR,
-  # Recording Threshold, Activation Check, Generalization Rule. Every
-  # downstream workflow that runs the closure gate references this file.
-  - file: workflows/update-rules.md
+  # task-closure.md is the canonical home for the cross-cutting closure gate.
+  # Every downstream workflow that runs the closure gate references this file.
+  - file: workflows/task-closure.md
     must_contain:
       - "## Task Closure Protocol"
       - "### Rationalizations to Reject"
       - "### Red Flags"
       - "## After-Action Review"
+
+  # update-rules.md holds the recording mechanics the closure gate's
+  # "record if needed" step calls into (threshold, activation, generalization),
+  # plus rule sync and deprecation.
+  - file: workflows/update-rules.md
+    must_contain:
       - "### Recording Threshold"
       - "### Activation Check"
       - "### Generalization Rule"
@@ -60,6 +65,7 @@ required_sections:
 # Files required to exist (presence-only check).
 required_files:
   - path: workflows/plan-feature.md
+  - path: workflows/task-closure.md
   - path: workflows/update-rules.md
   - path: workflows/fix-bug.md
   - path: workflows/maintain-docs.md

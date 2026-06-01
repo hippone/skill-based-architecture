@@ -98,7 +98,8 @@ Avoid one giant `workflow.md` — specialize by task type.
 
 **Required meta-workflow** (create for every project):
 
-- `update-rules.md` — rule sync + after-action review + learn-from-mistakes + deprecation (canonical workflow at [`templates/skill/workflows/update-rules.md`](../templates/skill/workflows/update-rules.md))
+- `task-closure.md` — cross-cutting closure gate: Task Closure Protocol + after-action review + rationalizations (canonical workflow at [`templates/skill/workflows/task-closure.md`](../templates/skill/workflows/task-closure.md))
+- `update-rules.md` — rule sync + recording mechanics + learn-from-mistakes + deprecation (canonical workflow at [`templates/skill/workflows/update-rules.md`](../templates/skill/workflows/update-rules.md))
 
 **Recommended maintenance workflow** (add when the skill has enough docs to maintain):
 
@@ -232,7 +233,7 @@ Give the subagent a realistic migration or bug-fix task that *should* trigger th
 
 ### GREEN — Fold verbatim rationalizations into the table
 
-Open `skills/<name>/workflows/update-rules.md` § "Rationalizations to Reject" (or `templates/protocol-blocks/rationalizations-table.md` for the reusable version). Add a new row:
+Open `skills/<name>/workflows/task-closure.md` § "Rationalizations to Reject" (or `templates/protocol-blocks/rationalizations-table.md` for the reusable version). Add a new row:
 
 | Rationalization (verbatim from subagent) | Reality (the rebuttal) |
 |---|---|

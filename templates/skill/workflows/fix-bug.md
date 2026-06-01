@@ -20,7 +20,7 @@
 4. Implement the smallest correct fix — no "while we're here" cleanups
 5. Run Fix Impact Analysis — confirm the change did not silently break callers, data flow, or compatibility
 6. Validate behavior (tests pass, manual reproduction no longer triggers the bug). **Before running tests / build,** ask the reverse-question "主 agent 看这一步的全过程是多余的吗?" — if yes, see [`subagent-driven.md` § Mode 1: Direct Auxiliary Delegation](subagent-driven.md#mode-1-direct-auxiliary-delegation) signals #1 / #2 to optionally dispatch a verify / build subagent (Codex falls back to display isolation).
-7. **Run Task Closure Protocol** from `workflows/update-rules.md` — mandatory, not optional
+7. **Run Task Closure Protocol** from `workflows/task-closure.md` — mandatory, not optional
 8. If the recording threshold passes, update the appropriate `rules/`, `references/`, or `workflows/` file before ending the task
 9. Records must pass the generalization check — write as reusable knowledge, not project-specific narratives
 10. If the lesson is costly and task-relevant, also activate it in workflow/routing, not only store in `references/`

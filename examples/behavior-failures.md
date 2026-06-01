@@ -35,7 +35,7 @@ Cost two weeks later: same bug in `OrderService`, same debug path, same 45-minut
 >
 > 2/3 rows passed the recording threshold. Added one bullet to `references/gotchas.md#service-layer-validation` and one line to `rules/backend-rules.md`. Done."
 
-**The mechanism that caught it:** `templates/skill/workflows/update-rules.md § Task Closure Protocol` forces the 4-question scan **before** "complete" is allowed. The Agent's borrowed time (30 seconds) is cheaper than the next duplicate bug.
+**The mechanism that caught it:** `templates/skill/workflows/task-closure.md § Task Closure Protocol` forces the 4-question scan **before** "complete" is allowed. The Agent's borrowed time (30 seconds) is cheaper than the next duplicate bug.
 
 **Rationalization that would have bypassed it:**
 
@@ -43,7 +43,7 @@ Cost two weeks later: same bug in `OrderService`, same debug path, same 45-minut
 |---|---|
 | "The task was one line — AAR is overkill" | Small tasks are where lessons hide. 30-second scan < 45-minute re-debug. |
 
-See [templates/skill/workflows/update-rules.md § Rationalizations to Reject](../templates/skill/workflows/update-rules.md) for the full table.
+See [templates/skill/workflows/task-closure.md § Rationalizations to Reject](../templates/skill/workflows/task-closure.md) for the full table.
 
 ---
 
@@ -134,7 +134,7 @@ Each layer can be silenced by compression; the next layer catches it.
 | "I remember the rules well enough" | Re-read costs 10 seconds; remembering wrong costs hours. |
 | "The two tasks are related — backend rules partly apply" | They don't. Different layer, different conventions, different file paths. Routes are not aesthetically joinable. |
 
-See [templates/skill/workflows/update-rules.md § Rationalizations to Reject](../templates/skill/workflows/update-rules.md) for the full table (rows 7 and 8 cover this exact failure mode).
+See [templates/skill/workflows/task-closure.md § Rationalizations to Reject](../templates/skill/workflows/task-closure.md) for the full table (rows 7 and 8 cover this exact failure mode).
 
 ---
 

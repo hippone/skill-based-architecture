@@ -5,21 +5,22 @@
 
 The canonical workflow templates live under `templates/skill/workflows/`. Every project should adopt at least these:
 
-- [`update-rules.md`](../templates/skill/workflows/update-rules.md) — shared exit gate; covers rule sync, AAR, recording threshold, rule deprecation, post-update health check.
+- [`task-closure.md`](../templates/skill/workflows/task-closure.md) — cross-cutting closure gate (Task Closure Protocol, AAR, Rationalizations, Red Flags); referenced by every behavior-changing workflow at closure.
+- [`update-rules.md`](../templates/skill/workflows/update-rules.md) — recording mechanics the gate calls into (threshold, activation, generalization), plus rule sync, deprecation, and post-update health check.
 - [`maintain-docs.md`](../templates/skill/workflows/maintain-docs.md) — file health check, split, merge, and reference integrity.
 
 For a higher-level orientation and the minimal starter scaffold, see [`TEMPLATES-GUIDE.md`](../TEMPLATES-GUIDE.md).
 
 ## Task Closure Protocol
 
-Canonical source: [`templates/skill/workflows/update-rules.md`](../templates/skill/workflows/update-rules.md#task-closure-protocol).
+Canonical source: [`templates/skill/workflows/task-closure.md`](../templates/skill/workflows/task-closure.md#task-closure-protocol).
 
 This reference deliberately gives only the operating summary: task closure
 applies only when the **Trigger Policy** admits the task (code or doc was
 changed); for those tasks, closure means main-work verification, the 30-second
 AAR scan, and any triggered recording, path-integrity, route-path, cross-
 reference, behavior-validation, or external-fact checks. Keep the exact gate
-wording and trigger table in `update-rules.md` so the protocol does not drift
+wording and trigger table in `task-closure.md` so the protocol does not drift
 across guide/reference copies.
 
 **Pure Q&A, code explanation, read-only investigation, and advice with no file
@@ -29,7 +30,7 @@ not a default closure action for ordinary code changes or read-only work.
 
 ### Blast-Radius Buckets (closure trigger refinement)
 
-The Trigger Policy table in `update-rules.md` asks "what kind of file changed?"
+The Trigger Policy table in `task-closure.md` asks "what kind of file changed?"
 Blast-radius buckets give the **file-path classification** used to answer that
 for this repo. Classification is by path alone — no content inspection, no
 intent judgment.
@@ -106,6 +107,8 @@ Skip recording:
 
 ## Where To Record
 
+*Operating summary — canonical: [`update-rules.md`](../templates/skill/workflows/update-rules.md) § Where To Record. Keep the two in sync when destinations change.*
+
 Use the lightest useful destination:
 
 - Stable constraint or convention → `rules/`
@@ -118,6 +121,8 @@ Use the lightest useful destination:
 Prefer appending to an existing file over creating a new one. Create a new file only when the topic is distinct enough to stay readable on its own.
 
 ## Recording Destination Guide
+
+*Operating summary — canonical: [`update-rules.md`](../templates/skill/workflows/update-rules.md) § Recording Destination. Keep in sync.*
 
 When the user explicitly asks to "record this", "remember this", or "save this for later", the agent must decide where to store the knowledge. Many AI tools (Claude Code, Gemini CLI) have their own memory systems (e.g., `~/.claude/projects/.../memory/`) that auto-load each session. These compete with the skill's documentation structure.
 

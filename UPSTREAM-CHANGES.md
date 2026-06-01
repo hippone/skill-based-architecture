@@ -48,6 +48,75 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-29 - Extract Task Closure Protocol into its own canonical workflow
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - **NEW `templates/skill/workflows/task-closure.md`** — the cross-cutting
+    closure gate now has its own correctly-named home: Task Closure Trigger
+    Policy, the six closure steps, the 30-second AAR scan, Rationalizations to
+    Reject, Red Flags. Its "record if needed" step (3) points into
+    `update-rules.md` for the recording mechanics.
+  - `templates/skill/workflows/update-rules.md` — closure gate + AAR +
+    Rationalizations + Red Flags removed (moved to `task-closure.md`). Kept:
+    Classification Guide, Sync Targets, and the **recording mechanics**
+    (Recording Threshold, Search Before Record, Where To Record, Activation
+    Check, Generalization Rule, Entry Tagging, Structural Placement), plus Rule
+    Deprecation and Post-Update Health Check. New `## Task Closure` pointer
+    section + `## Recording Lessons` H2 parent for the recording H3s.
+  - `templates/skill/conformance.yaml` — split the `update-rules.md`
+    must_contain block: closure-gate assertions (`## Task Closure Protocol`,
+    `### Rationalizations to Reject`, `### Red Flags`, `## After-Action Review`)
+    moved to a new `workflows/task-closure.md` entry; recording assertions
+    (`### Recording Threshold`, `### Activation Check`, `### Generalization
+    Rule`) stay on `update-rules.md`. Added `task-closure.md` to required_files.
+  - Repointed closure-step refs (`fix-bug`, `change-managed`, `edit-templates`,
+    `refactor-fanout`, `skill-composition.md`, `thin-shells.md`), Rationalizations
+    refs (`SKILL.md`, `WORKFLOW.md`, `full-migration.md`, `behavior-failures.md`,
+    `TEMPLATES-GUIDE.md`, `protocols.md`), and all shells (3 template shells +
+    4 generated root shells via `self-hosting-shell-base.md`) from
+    `update-rules.md` → `task-closure.md`.
+- Why it matters: the closure gate is cross-cutting (every behavior-changing
+  task runs it) but its canonical text lived inside a file named for rule
+  updates, so every other workflow said "run Task Closure Protocol from the
+  rule-update workflow" — an ownership inversion held together only by
+  hand-written cross-refs. `rationalizations-table.md` / `red-flags-stop.md`
+  were already extracted to `protocol-blocks/`; this completes that half-done
+  extraction. The gate now decides *whether* to record; `update-rules.md`
+  decides *how*.
+- Downstream refresh guidance:
+  - **STOP — do not apply the default "copy new mechanism files whole" step for
+    this change if your `update-rules.md` is localized or structurally diverged**
+    (translated to another language, or you keep Blast-Radius Buckets / extra
+    sections inside it). Dropping upstream's English `task-closure.md` in as-is
+    leaves the closure gate **duplicated in two files** — your localized
+    `update-rules.md` still holds it, now alongside an English `task-closure.md`.
+    Instead, **extract your own closure sections** (Task Closure Protocol, Trigger
+    Policy, Rationalizations to Reject, Red Flags, After-Action Review) out of your
+    local `update-rules.md` into a new `task-closure.md`, preserving your language
+    and local placement, then **delete those sections from `update-rules.md`**.
+  - This is an **additive** change at the *upstream* level (chosen over renaming
+    `update-rules.md`, which would risk losing downstream-local content on every
+    refresh) — but inside *your* repo it is still a content move, not a file copy.
+    Keep your project-specific recording targets and any locally-added
+    Rationalizations rows.
+  - Repoint every `workflows/update-rules.md` reference that means "run the
+    closure gate" or "§ Rationalizations to Reject" → `workflows/task-closure.md`.
+    Refs that mean "recording threshold / activation / generalization" stay on
+    `update-rules.md`.
+  - Update your `conformance.yaml` exactly as above (move the closure-gate
+    assertions to a `workflows/task-closure.md` entry; keep the recording ones on
+    `update-rules.md`; add `task-closure.md` to required_files), then validate
+    against the freshly-cloned **upstream** manifest:
+    `bash skills/<name>/scripts/check-version-conformance.sh skills/<name> --conformance <upstream-clone>/templates/skill/conformance.yaml`.
+  - **conformance is presence-only — it verifies `task-closure.md` *has* the gate
+    headings, never that `update-rules.md` no longer does.** A half-finished
+    migration (new file created, old sections left in place) passes green. After
+    migrating, **manually `grep` your `update-rules.md`** to confirm
+    `## Task Closure Protocol`, `### Rationalizations to Reject`, `### Red Flags`,
+    and `## After-Action Review` are **gone**. No check catches a leftover copy;
+    it will silently drift from the canonical `task-closure.md`.
+
 ## 2026-05-28 - Subagent Mode 1: Parallelism Premise + stale anchor cleanup
 
 - Upstream commit: pending in this working tree

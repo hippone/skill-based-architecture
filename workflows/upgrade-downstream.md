@@ -47,7 +47,7 @@ Upstream maintainers should run `bash scripts/check-upstream-changes.sh` before 
 
 After initial migration, two mechanisms keep documentation healthy over time:
 
-1. **Self-evolution** — `update-rules.md` includes after-action review and learn-from-mistakes steps, so the Agent proactively records new patterns, pitfalls, and conventions discovered during tasks. The sync trigger table itself is also a living document that grows as new mapping relationships are discovered. The review is lightweight, but it still happens before the task is considered done.
+1. **Self-evolution** — `task-closure.md` includes the after-action review scan and `update-rules.md` the recording / learn-from-mistakes steps, so the Agent proactively records new patterns, pitfalls, and conventions discovered during tasks. The sync trigger table itself is also a living document that grows as new mapping relationships are discovered. The review is lightweight, but it still happens before the task is considered done.
 2. **Self-maintenance** — `maintain-docs.md` provides file health checks, split procedures, and merge procedures. Line counts are **signals, not commands** — exceeding a threshold triggers evaluation, not automatic action. Only split when the file genuinely covers separable topics; only merge when fragments genuinely belong together.
 
 ## Incremental Migration

@@ -11,7 +11,8 @@
 - `workflows/add-controller.md` — new Controller + route + template
 - `workflows/add-entity-and-mapper.md` — new Entity + Mapper + Service method
 - `workflows/fix-bug.md` — debug flow
-- `workflows/update-rules.md` — rule sync + after-action review + learn-from-mistakes
+- `workflows/task-closure.md` — cross-cutting closure gate + after-action review + rationalizations
+- `workflows/update-rules.md` — rule sync + recording mechanics + learn-from-mistakes
 - `workflows/maintain-docs.md` — file health check, split, merge
 - `references/architecture.md` — package map, tech stack versions
 - `references/routes-and-modules.md` — Controller → Service → Mapper routing
@@ -94,6 +95,7 @@ Both are valuable. The key difference: rules are constraints agents must follow;
 | **Fat thin shell** — "compatibility shell" grows rule bodies or project-specific process detail | Defeats single-source-of-truth; two places to update | Strip back to routing, auto-triggers, compatibility notes, and conflict rule only |
 | **SKILL.md as second README** — repeats project setup, tech stack, onboarding | Agent reads redundant context; SKILL.md body exceeds 90 lines | Keep setup in README; SKILL.md only navigates rules/workflows |
 | **Rules ↔ Workflows mixed** — `backend-rules.md` contains step-by-step procedures | Hard to find the checklist when needed; hard to update constraints independently | Constraints → `rules/`, procedures → `workflows/` |
+| **Cross-cutting protocol buried in a narrow file** — a gate every task runs (e.g. closure / AAR) lives inside a workflow named for one task type (e.g. `update-rules.md`) | Sibling workflows must cross-ref a wrongly-scoped file ("run closure from the rule-update workflow"); the inversion holds only by hand-written links and misleads navigation | Give the cross-cutting protocol its own correctly-named file (e.g. `task-closure.md`); narrower workflows reference it, not the reverse |
 | **Implicit cross-skill dependency** — Skill A silently requires reading Skill B first | Agent misses context if it only reads one skill | Each skill self-contained; shared content → `skills/shared/` |
 | **Mega sub-file** — one `backend-rules.md` at 500+ lines | Same problem as the original oversized SKILL.md, one level down | Split by subdomain: `controller-rules.md`, `mapper-rules.md`, etc. |
 | **Over-splitting** — 20 tiny files with 10 lines each | Navigation overhead exceeds the benefit | Merge related files; aim for 50–200 lines per file |
